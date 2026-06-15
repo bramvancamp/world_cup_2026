@@ -18,7 +18,7 @@ function MatchRow({ fixture, T }) {
   const rawH = oddsToProb(h.odds)
   const rawA = oddsToProb(a.odds)
   const sum = rawH + rawA
-  const pctH = (rawH / sum * 100).toFixed(1)
+  const pctH = Math.round(rawH / sum * 100)
   const hIsRicher = h.value >= a.value
 
   return (
@@ -36,11 +36,11 @@ function MatchRow({ fixture, T }) {
         <div className="matchup-bar-section" style={{ marginTop: '6px' }}>
           <div className="matchup-bar-dual" style={{ height: '6px' }}>
             <div className="matchup-bar-a" style={{ width: `${pctH}%` }} />
-            <div className="matchup-bar-b" style={{ width: `${100 - parseFloat(pctH)}%` }} />
+            <div className="matchup-bar-b" style={{ width: `${100 - pctH}%` }} />
           </div>
-          <div className="matchup-bar-labels" style={{ fontSize: '10px' }}>
+          <div className="matchup-bar-labels">
             <span>{pctH}%</span>
-            <span>{(100 - parseFloat(pctH)).toFixed(1)}%</span>
+            <span>{100 - pctH}%</span>
           </div>
         </div>
       </div>
