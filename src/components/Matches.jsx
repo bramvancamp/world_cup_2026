@@ -98,7 +98,7 @@ export default function Matches({ fixtures, T, groupNames }) {
             return (
               <div key={md}>
                 <div className="match-day-label">Matchday {md} · {dayFix[0][2]}</div>
-                {dayFix.map((f, i) => <MatchRow key={i} fixture={f} T={T} />)}
+                {dayFix.map((f) => <MatchRow key={`${f[0]}-${f[1]}-${f[3]}-${f[4]}`} fixture={f} T={T} />)}
               </div>
             )
           })}
