@@ -865,7 +865,7 @@
     .match-side-meta { font-size: 12px; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .match-row { padding: 14px; gap: 10px; }
     .match-venue { display: none; }
-    .match-center { min-width: 72px; }
+    .match-center { width: 110px; flex-shrink: 0; }
     .matchup-bar-labels { font-size: 12px; }
   }
 
