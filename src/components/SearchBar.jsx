@@ -26,7 +26,7 @@ export default function SearchBar({ id, placeholder, onSearch }) {
         autoCorrect="off"
         spellCheck="false"
       />
-      <button className={`search-clear${val ? ' visible' : ''}`} onClick={handleClear}>✕</button>
+      <button type="button" aria-label="Clear search" className={`search-clear${val ? ' visible' : ''}`} onClick={handleClear}>✕</button>
     </div>
   )
 }
