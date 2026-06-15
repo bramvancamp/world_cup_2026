@@ -10,6 +10,10 @@
     --text: #e2e8f0;
     --muted: #64748b;
     --dim: #334155;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --glow: rgba(0, 212, 170, 0.12);
+    --bar-gradient: linear-gradient(90deg, #00d4aa, #00a8ff);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,8 +28,10 @@
 
   /* HERO */
   .hero {
-    background: linear-gradient(135deg, #0a0e1a 0%, #0f1e3a 50%, #0a0e1a 100%);
-    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse at 85% -10%, rgba(0, 212, 170, 0.18) 0%, transparent 55%),
+      linear-gradient(135deg, #0a0e1a 0%, #0f1e3a 50%, #0a0e1a 100%);
+    border-bottom: 1px solid var(--glass-border);
     padding: 40px 32px 32px;
     position: relative;
     overflow: hidden;
@@ -84,8 +90,10 @@
     display: flex;
     gap: 0;
     padding: 0 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -104,7 +112,7 @@
     white-space: nowrap;
   }
   .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); text-shadow: 0 0 20px rgba(0, 212, 170, 0.6); }
 
   /* CONTAINER */
   .container { padding: 28px 32px; max-width: 1200px; }
@@ -199,7 +207,7 @@
   .rank-bar-cell { width: 200px; }
   .rank-bar-wrap { display: flex; align-items: center; gap: 8px; }
   .rank-bar-bg { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .rank-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.3s; }
+  .rank-bar-fill { height: 100%; border-radius: 3px; background: var(--bar-gradient); transition: width 0.3s; }
   .rank-val {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
@@ -217,18 +225,20 @@
     gap: 16px;
   }
   .group-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
     overflow: hidden;
+    transition: box-shadow 0.2s;
   }
+  .group-card:hover { box-shadow: 0 8px 32px var(--glow); }
   .group-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
+    background: rgba(26, 34, 53, 0.6);
+    border-bottom: 1px solid var(--glass-border);
   }
   .group-card-name {
     font-family: 'Barlow Condensed', sans-serif;
@@ -260,7 +270,7 @@
     border-radius: 2px;
     overflow: hidden;
   }
-  .group-team-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+  .group-team-bar-fill { height: 100%; background: var(--bar-gradient); border-radius: 2px; }
   .group-team-val {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
@@ -298,13 +308,13 @@
 
   .matchup-list { display: flex; flex-direction: column; gap: 12px; }
   .matchup-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
     padding: 16px 20px;
-    transition: border-color 0.15s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .matchup-card:hover { border-color: var(--dim); }
+  .matchup-card:hover { border-color: rgba(0, 212, 170, 0.25); box-shadow: 0 8px 32px var(--glow); }
   .matchup-card.mega-gap { border-left: 3px solid var(--danger); }
   .matchup-card.big-gap { border-left: 3px solid var(--accent2); }
   .matchup-meta {
@@ -371,7 +381,7 @@
     border-radius: 4px;
     overflow: hidden;
   }
-  .matchup-bar-a { background: var(--accent); }
+  .matchup-bar-a { background: var(--bar-gradient); }
   .matchup-bar-b { background: var(--dim); }
   .matchup-bar-labels {
     display: flex;
@@ -450,19 +460,19 @@
     gap: 10px;
   }
   .team-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
     padding: 14px 12px;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
     text-align: center;
   }
-  .team-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .team-card:hover { border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 8px 24px var(--glow); transform: translateY(-2px); }
   .team-card-flag { font-size: 28px; }
   .team-card-name { font-size: 13px; font-weight: 500; line-height: 1.2; }
   .team-card-group {
@@ -497,8 +507,10 @@
     right: -100%;
     width: min(520px, 100vw);
     height: 100vh;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
+    background: rgba(10, 14, 26, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-left: 1px solid var(--glass-border);
     z-index: 101;
     display: flex;
     flex-direction: column;
@@ -511,8 +523,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(26, 34, 53, 0.7);
     flex-shrink: 0;
   }
   .squad-panel-title {
@@ -741,13 +753,15 @@
   .match-row {
     display: flex;
     align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
     padding: 12px 16px;
     margin-bottom: 8px;
     gap: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
+  .match-row:hover { border-color: rgba(0, 212, 170, 0.2); box-shadow: 0 4px 20px var(--glow); }
   .match-side {
     flex: 1;
     display: flex;
