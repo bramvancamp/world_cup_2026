@@ -8,12 +8,21 @@ const TABS = [
 
 export default function Tabs({ active, onSelect }) {
   return (
-    <div className="tabs">
+    <div className="tabs" role="navigation" aria-label="Sections">
       {TABS.map(t => (
         <div
           key={t.id}
+          role="button"
+          tabIndex={0}
+          aria-pressed={active === t.id}
           className={`tab${active === t.id ? ' active' : ''}`}
           onClick={() => onSelect(t.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onSelect(t.id)
+            }
+          }}
         >
           {t.label}
         </div>
