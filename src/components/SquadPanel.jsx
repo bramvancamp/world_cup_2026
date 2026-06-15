@@ -30,7 +30,7 @@ export default function SquadPanel({ teamName, teams, onClose }) {
       <div className="squad-panel open">
         <div className="squad-panel-header">
           <div className="squad-panel-title">{t.flag}{'  '}{t.name}</div>
-          <button className="squad-close" onClick={onClose}>✕</button>
+          <button type="button" className="squad-close" aria-label="Close squad panel" onClick={onClose}>✕</button>
         </div>
         <div className="squad-panel-meta">
           <div className="squad-meta-item">
