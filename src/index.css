@@ -861,11 +861,12 @@
     .filter-btn { font-size: 11px; padding: 5px 10px; }
 
     /* Matches mobile */
-    .match-side-name { font-size: 13px; }
-    .match-side-meta { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-    .match-row { padding: 11px 12px; gap: 8px; }
+    .match-side-name { font-size: 14px; }
+    .match-side-meta { font-size: 12px; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .match-row { padding: 14px; gap: 10px; }
     .match-venue { display: none; }
-    .match-center { min-width: 64px; }
+    .match-center { min-width: 72px; }
+    .matchup-bar-labels { font-size: 12px; }
   }
 
   @media (max-width: 380px) {
