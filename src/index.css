@@ -862,9 +862,10 @@
 
     /* Matches mobile */
     .match-side-name { font-size: 13px; }
+    .match-side-meta { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .match-row { padding: 11px 12px; gap: 8px; }
     .match-venue { display: none; }
-    .match-center { min-width: 40px; }
+    .match-center { min-width: 64px; }
   }
 
   @media (max-width: 380px) {
