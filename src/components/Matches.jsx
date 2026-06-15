@@ -34,7 +34,7 @@ function MatchRow({ fixture, T }) {
         <span className="match-vs">VS</span>
         <div className="match-venue">{venue}</div>
         <div className="matchup-bar-section" style={{ marginTop: '6px' }}>
-          <div className="matchup-bar-dual" style={{ height: '6px' }}>
+          <div className="matchup-bar-dual" style={{ height: '8px' }}>
             <div className="matchup-bar-a" style={{ width: `${pctH}%` }} />
             <div className="matchup-bar-b" style={{ width: `${100 - pctH}%` }} />
           </div>
