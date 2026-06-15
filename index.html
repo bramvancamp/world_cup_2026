@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 — Squad Values & Matchup Gaps</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,500;0,700;0,900;1,700&family=Barlow:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4aa;
+    --accent2: #f0b429;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #334155;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1e3a 50%, #0a0e1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '⚽';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-size: 180px;
+    opacity: 0.04;
+    transform: rotate(-15deg);
+  }
+  .hero-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+  .hero-title span { color: var(--accent); }
+  .hero-sub {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.5;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .hero-stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* CONTAINER */
+  .container { padding: 28px 32px; max-width: 1200px; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .section-note { font-size: 12px; color: var(--muted); }
+
+  /* RANKING TABLE */
+  .rank-table { width: 100%; border-collapse: collapse; }
+  .rank-table thead th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rank-table thead th:last-child { text-align: right; }
+  .rank-table tbody tr {
+    border-bottom: 1px solid #111827;
+    transition: background 0.1s;
+    cursor: default;
+  }
+  .rank-table tbody tr:hover { background: var(--surface2); }
+  .rank-table td { padding: 10px 12px; font-size: 14px; vertical-align: middle; }
+  .rank-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    color: var(--dim);
+    font-size: 13px;
+    width: 36px;
+  }
+  .rank-flag { font-size: 20px; width: 32px; }
+  .rank-country { font-weight: 500; }
+  .team-link {
+    cursor: pointer;
+    transition: color 0.12s;
+  }
+  .team-link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .rank-conf {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+  }
+  .rank-group {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    background: var(--dim);
+    color: var(--text);
+    padding: 2px 7px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .fifa-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .rank-odds {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent2);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .rank-bar-cell { width: 200px; }
+  .rank-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .rank-bar-bg { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .rank-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.3s; }
+  .rank-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: right;
+    min-width: 80px;
+  }
+  .top3 .rank-val { color: var(--accent2); }
+  .bottom5 .rank-val { color: var(--muted); }
+
+  /* GROUPS GRID */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .group-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .group-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .group-card-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .group-card-total {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .group-team {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .group-team:last-child { border-bottom: none; }
+  .group-team-flag { font-size: 18px; }
+  .group-team-name { flex: 1; font-size: 14px; font-weight: 400; }
+  .group-team-bar {
+    width: 80px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .group-team-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+  .group-team-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 55px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* MATCHUPS SECTION */
+  .matchup-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+  .filter-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  .matchup-list { display: flex; flex-direction: column; gap: 12px; }
+  .matchup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    transition: border-color 0.15s;
+  }
+  .matchup-card:hover { border-color: var(--dim); }
+  .matchup-card.mega-gap { border-left: 3px solid var(--danger); }
+  .matchup-card.big-gap { border-left: 3px solid var(--accent2); }
+  .matchup-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .matchup-group-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .matchup-delta-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .matchup-delta-badge.mega { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .matchup-delta-badge.big { background: rgba(240,180,41,0.15); color: var(--accent2); }
+  .matchup-teams {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .matchup-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .matchup-team.right { justify-content: flex-end; flex-direction: row-reverse; }
+  .matchup-team-flag { font-size: 22px; }
+  .matchup-team-name { font-size: 15px; font-weight: 500; }
+  .matchup-team-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .matchup-vs {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--dim);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .matchup-bar-section {
+    margin-top: 12px;
+  }
+  .matchup-bar-dual {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .matchup-bar-a { background: var(--accent); }
+  .matchup-bar-b { background: var(--dim); }
+  .matchup-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .matchup-ratio {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    color: var(--accent2);
+    font-size: 13px;
+  }
+
+  /* BUBBLE CHART */
+  #bubble-chart {
+    width: 100%;
+    height: 500px;
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+  }
+  .bubble:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 20px rgba(0,212,170,0.4);
+    border-color: var(--accent);
+    z-index: 10;
+  }
+  .bubble-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    text-align: center;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    padding: 2px;
+    pointer-events: none;
+    line-height: 1.1;
+  }
+  .bubble-tooltip {
+    position: absolute;
+    background: #1a2235;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+    display: none;
+  }
+  .bubble-tooltip strong {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    display: block;
+  }
+
+  /* TEAMS GRID */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .team-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .team-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .team-card-flag { font-size: 28px; }
+  .team-card-name { font-size: 13px; font-weight: 500; line-height: 1.2; }
+  .team-card-group {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--dim);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--muted);
+  }
+  .team-card-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* SQUAD OVERLAY + PANEL */
+  .squad-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    backdrop-filter: blur(2px);
+  }
+  .squad-overlay.open { display: block; }
+  .squad-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: min(520px, 100vw);
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.25s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+  }
+  .squad-panel.open { right: 0; }
+  .squad-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    flex-shrink: 0;
+  }
+  .squad-panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .squad-close {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .squad-close:hover { border-color: var(--accent); color: var(--accent); }
+  .squad-panel-meta {
+    display: flex;
+    gap: 20px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .squad-meta-item { display: flex; flex-direction: column; gap: 1px; }
+  .squad-meta-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .squad-meta-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .squad-panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 32px;
+  }
+  .squad-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    height: 200px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .squad-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SQUAD POSITION GROUP */
+  .squad-pos-group { margin-bottom: 20px; }
+  .squad-pos-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .squad-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #111827;
+  }
+  .squad-player:last-child { border-bottom: none; }
+  .squad-player-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dim);
+    min-width: 22px;
+    text-align: right;
+  }
+  .squad-player-name { flex: 1; font-size: 14px; font-weight: 400; }
+  .squad-player-club { font-size: 11px; color: var(--muted); }
+  .squad-player-pos {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--muted);
+    min-width: 28px;
+    text-align: center;
+  }
+  .squad-player-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 52px;
+    text-align: right;
+  }
+  .squad-error {
+    color: var(--danger);
+    font-size: 14px;
+    padding: 20px 0;
+    text-align: center;
+  }
+  .squad-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 36px 10px 36px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--muted); }
+  .search-input:focus { border-color: var(--accent); }
+  .search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    display: none;
+  }
+  .search-clear.visible { display: block; }
+  .search-no-results {
+    text-align: center;
+    padding: 32px 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* MATCHES */
+  .match-group-filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .mg-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mg-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mg-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .mg-btn.all { width: auto; padding: 0 14px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .match-group-block { margin-bottom: 28px; }
+  .match-group-heading {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .match-day-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 14px 0 8px;
+  }
+  .match-row {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    gap: 10px;
+  }
+  .match-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .match-side.home { justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
+  .match-side.away { justify-content: flex-start; }
+  .match-side-flag { font-size: 20px; flex-shrink: 0; }
+  .match-side-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .match-side.home .match-side-info { align-items: flex-end; }
+  .match-side.away .match-side-info { align-items: flex-start; }
+  .match-side-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .match-side-meta {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .match-center {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 52px;
+  }
+  .match-vs {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--dim);
+  }
+  .match-venue {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .hero { padding: 22px 16px 18px; }
+    .hero::before { font-size: 120px; right: -10px; top: -10px; }
+    .hero-title { font-size: 34px; line-height: 0.92; }
+    .hero-sub { font-size: 13px; margin-top: 10px; }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 16px;
+      margin-top: 18px;
+    }
+    .hero-stat-val { font-size: 22px; }
+    .hero-stat-lbl { font-size: 10px; }
+
+    /* Tabs: 5-way split on mobile */
+    .tabs { padding: 0; }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 13px 2px;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
+
+    .team-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .team-card { padding: 12px 8px; }
+    .team-card-flag { font-size: 24px; }
+    .team-card-name { font-size: 12px; }
+
+    .container { padding: 20px 16px; }
+    .section-title { font-size: 19px; }
+
+    /* Ranking table: trim to essentials */
+    .rank-table td, .rank-table th { padding: 9px 5px; }
+    .rank-conf, th.col-conf { display: none; }
+    .rank-bar-cell { display: none; }
+    .rank-num { width: 22px; font-size: 12px; }
+    .rank-flag { width: 24px; font-size: 18px; }
+    .rank-country { font-size: 13px; }
+    .rank-val { font-size: 14px; min-width: 60px; }
+    .fifa-rank { font-size: 12px; }
+
+    /* Groups: single column, full width */
+    .groups-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Matchups: keep values visible but stacked tighter */
+    .matchup-card { padding: 14px 16px; }
+    .matchup-team-val { display: block; font-size: 11px; }
+    .matchup-team-name { font-size: 14px; }
+    .matchup-team-flag { font-size: 20px; }
+    .matchup-delta-badge { font-size: 12px; }
+    .matchup-bar-labels { font-size: 10px; }
+    .matchup-bar-labels span { max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .matchup-filters { gap: 6px; }
+    .filter-btn { font-size: 11px; padding: 5px 10px; }
+
+    /* Matches mobile */
+    .match-side-name { font-size: 13px; }
+    .match-row { padding: 11px 12px; gap: 8px; }
+    .match-venue { display: none; }
+    .match-center { min-width: 40px; }
+  }
+
+  @media (max-width: 380px) {
+    .hero-title { font-size: 30px; }
+    .matchup-team-name { font-size: 13px; }
+    .rank-conf, th.col-conf { display: none; }
+    .rank-table td, .rank-table th { padding: 9px 4px; }
+    .rank-table td:last-child, .rank-table th:last-child { padding-right: 2px; }
+    .rank-val { min-width: 56px; font-size: 13px; }
+    .rank-country { font-size: 12px; }
+    .rank-group { padding: 2px 5px; font-size: 12px; }
+  }
+
+  /* LEGEND QUOTE */
+  .squad-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    background: var(--bg);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 6px 6px 0;
+  }
+  .squad-legend-quote {
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .squad-legend-quote::before { content: '\201C'; color: var(--accent2); font-size: 18px; line-height: 0; vertical-align: -4px; margin-right: 2px; }
+  .squad-legend-quote::after  { content: '\201D'; color: var(--accent2); font-size: 18px; line-height: 0; vertical-align: -4px; margin-left: 2px; }
+  .squad-legend-attr {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Data: Transfermarkt · June 2026</div>
+  <h1 class="hero-title">World Cup 2026<br><span>Squad Values</span></h1>
+  <p class="hero-sub">All 48 national teams ranked by Transfermarkt squad value. Group matchup analysis shows where the biggest financial gaps — and biggest mismatches — occur.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-val">€17.57B</span>
+      <span class="hero-stat-lbl">Total tournament value</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">€1.53B</span>
+      <span class="hero-stat-lbl">Highest squad (France)</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">€19.8M</span>
+      <span class="hero-stat-lbl">Lowest squad (Jordan)</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">77×</span>
+      <span class="hero-stat-lbl">France vs Jordan ratio</span>
+    </div>
+    <div class="hero-stat">
+      <button onclick="downloadHTML()" style="
+        font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;
+        letter-spacing:1px;text-transform:uppercase;padding:8px 14px;
+        background:transparent;border:1px solid var(--border);color:var(--muted);
+        border-radius:6px;cursor:pointer;transition:all 0.15s;white-space:nowrap;
+      " onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        ↓ Download
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('rankings')">Ranking</div>
+  <div class="tab" onclick="showTab('teams')">Teams</div>
+  <div class="tab" onclick="showTab('groups')">Groups</div>
+  <div class="tab" onclick="showTab('matches')">Matches</div>
+  <div class="tab" onclick="showTab('matchups')">Gaps</div>
+</div>
+
+<div class="container">
+
+  <!-- RANKINGS TAB -->
+  <div class="section active" id="tab-rankings">
+    <div class="section-header">
+      <div class="section-title">Squad Value Ranking</div>
+      <div class="section-note">Source: Transfermarkt, June 2026</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-rankings" placeholder="Search country…" oninput="filterRankings(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="clear-rankings" onclick="clearSearch('rankings')">✕</button>
+    </div>
+    <table class="rank-table" id="ranking-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th></th>
+          <th>Country</th>
+          <th class="col-conf">Conf</th>
+          <th>Group</th>
+          <th class="col-fifa">FIFA</th>
+          <th class="rank-bar-cell">Relative</th>
+          <th style="text-align:right">Value</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+  </div>
+
+  <!-- TEAMS TAB -->
+  <div class="section" id="tab-teams">
+    <div class="section-header">
+      <div class="section-title">Select a Team</div>
+      <div class="section-note">Tap a team to see full squad · player values · positions</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-teams" placeholder="Search country…" oninput="filterTeams(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="clear-teams" onclick="clearSearch('teams')">✕</button>
+    </div>
+    <div class="team-grid" id="team-grid"></div>
+  </div>
+
+  <!-- SQUAD MODAL -->
+  <div class="squad-overlay" id="squad-overlay" onclick="closeSquad()"></div>
+  <div class="squad-panel" id="squad-panel">
+    <div class="squad-panel-header">
+      <div class="squad-panel-title" id="squad-title"></div>
+      <button class="squad-close" onclick="closeSquad()">✕</button>
+    </div>
+    <div class="squad-panel-meta" id="squad-meta"></div>
+    <div class="squad-panel-body" id="squad-body">
+      <div class="squad-loading" id="squad-loading">
+        <div class="squad-spinner"></div>
+        <div>Loading squad data…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUPS TAB -->
+  <div class="section" id="tab-groups">
+    <div class="section-header">
+      <div class="section-title">Groups by Combined Squad Value</div>
+      <div class="section-note">Sorted highest to lowest total group value</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-groups" placeholder="Search country…" oninput="filterGroups(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="clear-groups" onclick="clearSearch('groups')">✕</button>
+    </div>
+    <div class="groups-grid" id="groups-grid"></div>
+  </div>
+
+  <!-- MATCHES TAB -->
+  <div class="section" id="tab-matches">
+    <div class="section-header">
+      <div class="section-title">Group Stage Fixtures</div>
+      <div class="section-note">72 matches · June 11–27, 2026 · Win prob. from BetMGM/FanDuel (June 2026) · <span style="color:var(--accent);font-weight:600">Green</span> = higher squad value</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-matches" placeholder="Search country…" oninput="filterMatchesByName(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="clear-matches" onclick="clearSearch('matches')">✕</button>
+    </div>
+    <div class="match-group-filters" id="match-group-filters"></div>
+    <div id="matches-container"></div>
+  </div>
+
+  <!-- MATCHUPS TAB -->
+  <div class="section" id="tab-matchups">
+    <div class="section-header">
+      <div class="section-title">Group Stage Matchups by Value Gap</div>
+      <div class="section-note">All 72 group-stage fixtures, sorted by squad value delta</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-gaps" placeholder="Search country…" oninput="filterGapsByName(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="clear-gaps" onclick="clearSearch('gaps')">✕</button>
+    </div>
+    <div class="matchup-filters">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="filterMatchups('all', this)">All (72)</button>
+      <button class="filter-btn" onclick="filterMatchups('top20', this)">Top 20 mismatches</button>
+      <button class="filter-btn" onclick="filterMatchups('mega', this)">Extreme ratio (&gt;20×)</button>
+      <button class="filter-btn" onclick="filterMatchups('closest', this)">Most even games</button>
+    </div>
+    <div class="matchup-list" id="matchups-list"></div>
+  </div>
+
+</div>
+
+<script>
+// Capture pristine page source immediately, before any rendering mutates the DOM.
+// This guarantees downloads contain empty containers that the script repopulates on open.
+const __PRISTINE_SOURCE__ = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const teams = [
+  // Group A
+  { name: 'Mexico',         flag: '🇲🇽', conf: 'CONCACAF', group: 'A', value: 194.6,  fifa: 14, odds: '+1900' },
+  { name: 'South Korea',    flag: '🇰🇷', conf: 'AFC',      group: 'A', value: 142.3,  fifa: 25, odds: '+15000' },
+  { name: 'Czechia',        flag: '🇨🇿', conf: 'UEFA',     group: 'A', value: 190.18, fifa: 39, odds: '+12000' },
+  { name: 'South Africa',   flag: '🇿🇦', conf: 'CAF',      group: 'A', value: 45.8,   fifa: 60, odds: '+50000' },
+  // Group B
+  { name: 'Canada',         flag: '🇨🇦', conf: 'CONCACAF', group: 'B', value: 203.05, fifa: 30, odds: '+15000' },
+  { name: 'Switzerland',    flag: '🇨🇭', conf: 'UEFA',     group: 'B', value: 333.6,  fifa: 19, odds: '+2500' },
+  { name: 'Qatar',          flag: '🇶🇦', conf: 'AFC',      group: 'B', value: 19.93,  fifa: 57, odds: '+50000' },
+  { name: 'Bosnia & Herz.', flag: '🇧🇦', conf: 'UEFA',     group: 'B', value: 149.2,  fifa: 64, odds: '+30000' },
+  // Group C
+  { name: 'Brazil',         flag: '🇧🇷', conf: 'CONMEBOL', group: 'C', value: 912.2,  fifa: 6, odds: '+1000' },
+  { name: 'Morocco',        flag: '🇲🇦', conf: 'CAF',      group: 'C', value: 488.2,  fifa: 7, odds: '+2700' },
+  { name: 'Haiti',          flag: '🇭🇹', conf: 'CONCACAF', group: 'C', value: 28.5,   fifa: 83, odds: '+100000' },
+  { name: 'Scotland',       flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', conf: 'UEFA',     group: 'C', value: 215.4,  fifa: 42, odds: '+15000' },
+  // Group D
+  { name: 'United States',  flag: '🇺🇸', conf: 'CONCACAF', group: 'D', value: 414.2,  fifa: 17, odds: '+1700' },
+  { name: 'Paraguay',       flag: '🇵🇾', conf: 'CONMEBOL', group: 'D', value: 157.15, fifa: 40, odds: '+20000' },
+  { name: 'Australia',      flag: '🇦🇺', conf: 'AFC',      group: 'D', value: 76.5,   fifa: 27, odds: '+25000' },
+  { name: 'Turkey',        flag: '🇹🇷', conf: 'UEFA',     group: 'D', value: 494.2,  fifa: 22, odds: '+5000' },
+  // Group E
+  { name: 'Germany',        flag: '🇩🇪', conf: 'UEFA',     group: 'E', value: 998.0,  fifa: 10, odds: '+1300' },
+  { name: 'Curaçao',        flag: '🇨🇼', conf: 'CONCACAF', group: 'E', value: 26.5,   fifa: 82, odds: '+100000' },
+  { name: 'Côte d\'Ivoire', flag: '🇨🇮', conf: 'CAF',      group: 'E', value: 530.9,  fifa: 33, odds: '+8000' },
+  { name: 'Ecuador',        flag: '🇪🇨', conf: 'CONMEBOL', group: 'E', value: 376.2,  fifa: 23, odds: '+3000' },
+  // Group F
+  { name: 'Netherlands',    flag: '🇳🇱', conf: 'UEFA',     group: 'F', value: 837.2,  fifa: 8, odds: '+1900' },
+  { name: 'Japan',          flag: '🇯🇵', conf: 'AFC',      group: 'F', value: 310.5,  fifa: 18, odds: '+3000' },
+  { name: 'Sweden',         flag: '🇸🇪', conf: 'UEFA',     group: 'F', value: 427.3,  fifa: 38, odds: '+8000' },
+  { name: 'Tunisia',        flag: '🇹🇳', conf: 'CAF',      group: 'F', value: 82.4,   fifa: 46, odds: '+30000' },
+  // Group G
+  { name: 'Belgium',        flag: '🇧🇪', conf: 'UEFA',     group: 'G', value: 542.9,  fifa: 9, odds: '+3300' },
+  { name: 'Egypt',          flag: '🇪🇬', conf: 'CAF',      group: 'G', value: 85.6,   fifa: 29, odds: '+12000' },
+  { name: 'Iran',           flag: '🇮🇷', conf: 'AFC',      group: 'G', value: 35.5,   fifa: 21, odds: '+15000' },
+  { name: 'New Zealand',    flag: '🇳🇿', conf: 'OFC',      group: 'G', value: 48.2,   fifa: 85, odds: '+50000' },
+  // Group H
+  { name: 'Spain',          flag: '🇪🇸', conf: 'UEFA',     group: 'H', value: 1260.0, fifa: 2, odds: '+450' },
+  { name: 'Cabo Verde',     flag: '🇨🇻', conf: 'CAF',      group: 'H', value: 57.3,   fifa: 67, odds: '+100000' },
+  { name: 'Saudi Arabia',   flag: '🇸🇦', conf: 'AFC',      group: 'H', value: 62.8,   fifa: 61, odds: '+50000' },
+  { name: 'Uruguay',        flag: '🇺🇾', conf: 'CONMEBOL', group: 'H', value: 405.8,  fifa: 16, odds: '+2200' },
+  // Group I
+  { name: 'France',         flag: '🇫🇷', conf: 'UEFA',     group: 'I', value: 1530.0, fifa: 3, odds: '+450' },
+  { name: 'Senegal',        flag: '🇸🇳', conf: 'CAF',      group: 'I', value: 472.9,  fifa: 15, odds: '+4000' },
+  { name: 'Iraq',           flag: '🇮🇶', conf: 'AFC',      group: 'I', value: 22.8,   fifa: 56, odds: '+80000' },
+  { name: 'Norway',         flag: '🇳🇴', conf: 'UEFA',     group: 'I', value: 601.0,  fifa: 31, odds: '+1400' },
+  // Group J
+  { name: 'Argentina',      flag: '🇦🇷', conf: 'CONMEBOL', group: 'J', value: 818.5,  fifa: 1, odds: '+950' },
+  { name: 'Algeria',        flag: '🇩🇿', conf: 'CAF',      group: 'J', value: 257.6,  fifa: 28, odds: '+10000' },
+  { name: 'Austria',        flag: '🇦🇹', conf: 'UEFA',     group: 'J', value: 388.9,  fifa: 24, odds: '+8000' },
+  { name: 'Jordan',         flag: '🇯🇴', conf: 'AFC',      group: 'J', value: 19.83,  fifa: 63, odds: '+100000' },
+  // Group K
+  { name: 'Portugal',       flag: '🇵🇹', conf: 'UEFA',     group: 'K', value: 1020.0, fifa: 5, odds: '+750' },
+  { name: 'Congo DR',       flag: '🇨🇩', conf: 'CAF',      group: 'K', value: 118.4,  fifa: 45, odds: '+25000' },
+  { name: 'Uzbekistan',     flag: '🇺🇿', conf: 'AFC',      group: 'K', value: 56.7,   fifa: 50, odds: '+50000' },
+  { name: 'Colombia',       flag: '🇨🇴', conf: 'CONMEBOL', group: 'K', value: 357.2,  fifa: 13, odds: '+1600' },
+  // Group L
+  { name: 'England',        flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', conf: 'UEFA',     group: 'L', value: 1310.0, fifa: 4, odds: '+700' },
+  { name: 'Croatia',        flag: '🇭🇷', conf: 'UEFA',     group: 'L', value: 385.7,  fifa: 11, odds: '+2700' },
+  { name: 'Ghana',          flag: '🇬🇭', conf: 'CAF',      group: 'L', value: 230.88, fifa: 73, odds: '+25000' },
+  { name: 'Panama',         flag: '🇵🇦', conf: 'CONCACAF', group: 'L', value: 34.83,  fifa: 34, odds: '+50000' },
+];
+
+// Groups metadata
+const groupNames = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+
+const confColors = {
+  'UEFA':     '#3b82f6',
+  'CONMEBOL': '#10b981',
+  'CONCACAF': '#f59e0b',
+  'CAF':      '#ef4444',
+  'AFC':      '#8b5cf6',
+  'OFC':      '#ec4899',
+};
+
+// Sort teams by value
+const sorted = [...teams].sort((a,b) => b.value - a.value);
+const maxVal = sorted[0].value;
+
+function fmtVal(v) {
+  if (v >= 1000) return `€${(v/1000).toFixed(2)}B`;
+  return `€${v.toFixed(0)}M`;
+}
+
+// ─── RANKING TABLE ───────────────────────────────────────────────────────────
+const rankBody = document.getElementById('ranking-body');
+sorted.forEach((t, i) => {
+  const pct = (t.value / maxVal * 100).toFixed(1);
+  const rowClass = i < 3 ? 'top3' : (i >= 43 ? 'bottom5' : '');
+  const confColor = confColors[t.conf] || '#64748b';
+  rankBody.innerHTML += `
+    <tr class="${rowClass}">
+      <td class="rank-num">${i+1}</td>
+      <td class="rank-flag">${t.flag}</td>
+      <td class="rank-country team-link" data-team="${t.name}">${t.name}</td>
+      <td class="rank-conf"><span style="color:${confColor};font-size:10px;font-weight:600;letter-spacing:1px">${t.conf}</span></td>
+      <td><span class="rank-group">${t.group}</span></td>
+      <td class="col-fifa"><span class="fifa-rank">#${t.fifa}</span></td>
+      <td class="rank-bar-cell">
+        <div class="rank-bar-wrap">
+          <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${confColor}"></div></div>
+        </div>
+      </td>
+      <td class="rank-val">${fmtVal(t.value)}</td>
+    </tr>
+  `;
+});
+
+// ─── GROUPS GRID ─────────────────────────────────────────────────────────────
+const groupsGrid = document.getElementById('groups-grid');
+const groupsData = groupNames.map(g => {
+  const gTeams = teams.filter(t => t.group === g).sort((a,b) => b.value - a.value);
+  const total = gTeams.reduce((s,t) => s + t.value, 0);
+  return { name: g, teams: gTeams, total };
+}).sort((a,b) => b.total - a.total);
+
+const maxGroupTotal = groupsData[0].total;
+
+groupsData.forEach(g => {
+  const html = g.teams.map(t => {
+    const pct = (t.value / g.teams[0].value * 100).toFixed(0);
+    const confColor = confColors[t.conf] || '#64748b';
+    return `
+      <div class="group-team">
+        <span class="group-team-flag">${t.flag}</span>
+        <span class="group-team-name team-link" data-team="${t.name}">${t.name}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);min-width:32px">#${t.fifa}</span>
+        <div class="group-team-bar"><div class="group-team-bar-fill" style="width:${pct}%;background:${confColor}"></div></div>
+        <span class="group-team-val">${fmtVal(t.value)}</span>
+      </div>
+    `;
+  }).join('');
+  groupsGrid.innerHTML += `
+    <div class="group-card">
+      <div class="group-card-header">
+        <span class="group-card-name">Group ${g.name}</span>
+        <span class="group-card-total">${fmtVal(g.total)}</span>
+      </div>
+      ${html}
+    </div>
+  `;
+});
+
+// ─── MATCHUPS ────────────────────────────────────────────────────────────────
+// Generate all group-stage matchups (3 per group of 4: 1v2, 1v3, 1v4, 2v3, 2v4, 3v4 → 6 per group)
+// Actually: each team plays 3 games → 6 unique matchups per group of 4
+function getMatchups(groupName) {
+  const gTeams = teams.filter(t => t.group === groupName);
+  const pairs = [];
+  for (let i = 0; i < gTeams.length; i++) {
+    for (let j = i+1; j < gTeams.length; j++) {
+      const a = gTeams[i].value >= gTeams[j].value ? gTeams[i] : gTeams[j];
+      const b = gTeams[i].value >= gTeams[j].value ? gTeams[j] : gTeams[i];
+      pairs.push({ group: groupName, a, b, delta: a.value - b.value, ratio: a.value / b.value });
+    }
+  }
+  return pairs;
+}
+
+let allMatchups = [];
+groupNames.forEach(g => allMatchups.push(...getMatchups(g)));
+allMatchups.sort((a,b) => b.ratio - a.ratio);
+let _gapTypeFilter = allMatchups; // search filter tracks this
+let _matchNameQ = '';
+let _gapNameQ = '';
+let currentMatchGroupFilter = 'all';
+
+let currentMatchups = allMatchups;
+
+function renderMatchups(matchups) {
+  const list = document.getElementById('matchups-list');
+  list.innerHTML = '';
+  matchups.forEach(m => {
+    const totalVal = m.a.value + m.b.value;
+    const pctA = (m.a.value / totalVal * 100).toFixed(1);
+    const cardClass = m.ratio > 20 ? 'mega-gap' : m.ratio > 8 ? 'big-gap' : '';
+    const badgeClass = m.ratio > 20 ? 'mega' : m.ratio > 8 ? 'big' : '';
+    list.innerHTML += `
+      <div class="matchup-card ${cardClass}">
+        <div class="matchup-meta">
+          <span class="matchup-group-tag">Group ${m.group}</span>
+          <span class="matchup-delta-badge ${badgeClass}">${m.ratio.toFixed(1)}× · gap ${fmtVal(m.delta)}</span>
+        </div>
+        <div class="matchup-teams">
+          <div class="matchup-team">
+            <span class="matchup-team-flag">${m.a.flag}</span>
+            <div>
+              <div class="matchup-team-name team-link" data-team="${m.a.name}">${m.a.name}</div>
+              <div class="matchup-team-val">${fmtVal(m.a.value)} · FIFA #${m.a.fifa}</div>
+            </div>
+          </div>
+          <div class="matchup-vs">VS</div>
+          <div class="matchup-team right">
+            <span class="matchup-team-flag">${m.b.flag}</span>
+            <div style="text-align:right">
+              <div class="matchup-team-name team-link" data-team="${m.b.name}">${m.b.name}</div>
+              <div class="matchup-team-val">${fmtVal(m.b.value)} · FIFA #${m.b.fifa}</div>
+            </div>
+          </div>
+        </div>
+        <div class="matchup-bar-section">
+          <div class="matchup-bar-dual">
+            <div class="matchup-bar-a" style="width:${pctA}%"></div>
+            <div class="matchup-bar-b" style="width:${100-pctA}%"></div>
+          </div>
+          <div class="matchup-bar-labels">
+            <span>${m.a.name}: ${pctA}% of combined value</span>
+            <span>${m.b.name}: ${(100-pctA).toFixed(1)}%</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+renderMatchups(allMatchups);
+
+function filterMatchups(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  let filtered;
+  if (type === 'all') filtered = allMatchups;
+  else if (type === 'top20') filtered = allMatchups.slice(0, 20);
+  else if (type === 'mega') filtered = allMatchups.filter(m => m.ratio > 20);
+  else if (type === 'closest') filtered = [...allMatchups].sort((a,b) => a.ratio - b.ratio).slice(0, 20);
+  renderMatchups(filtered);
+}
+
+// ─── MATCHES / FIXTURES ──────────────────────────────────────────────────────
+// Group-stage schedule (matchday, date). Teams reference the `teams` array by name.
+const teamByName = Object.fromEntries(teams.map(t => [t.name, t]));
+// alias lookup for schedule names that differ from data names
+const alias = {
+  'Korea Republic': 'South Korea',
+  'Cape Verde': 'Cabo Verde',
+  'Ivory Coast': "Côte d'Ivoire",
+  'Turkiye': 'Turkey',
+  'DR Congo': 'Congo DR',
+  'Bosnia': 'Bosnia & Herz.',
+};
+function T(name) { return teamByName[alias[name] || name]; }
+
+// [group, matchday, date, homeName, awayName, venue]
+const fixtures = [
+  // MATCHDAY 1
+  ['A',1,'Jun 11','Mexico','South Africa','Mexico City'],
+  ['A',1,'Jun 11','South Korea','Czechia','Guadalajara'],
+  ['B',1,'Jun 13','Qatar','Switzerland','San Francisco'],
+  ['B',1,'Jun 13','Bosnia & Herz.','Canada','Toronto'],
+  ['C',1,'Jun 13','Brazil','Morocco','New Jersey'],
+  ['C',1,'Jun 13','Haiti','Scotland','Boston'],
+  ['D',1,'Jun 12','United States','Paraguay','Los Angeles'],
+  ['D',1,'Jun 13','Australia','Turkey','Vancouver'],
+  ['E',1,'Jun 14','Germany','Curaçao','Houston'],
+  ['E',1,'Jun 14','Côte d\'Ivoire','Ecuador','Philadelphia'],
+  ['F',1,'Jun 14','Netherlands','Japan','Dallas'],
+  ['F',1,'Jun 14','Sweden','Tunisia','Guadalupe'],
+  ['G',1,'Jun 15','Belgium','Egypt','Vancouver'],
+  ['G',1,'Jun 15','Iran','New Zealand','Los Angeles'],
+  ['H',1,'Jun 15','Spain','Cabo Verde','Atlanta'],
+  ['H',1,'Jun 15','Saudi Arabia','Uruguay','Miami'],
+  ['I',1,'Jun 16','France','Senegal','New Jersey'],
+  ['I',1,'Jun 16','Iraq','Norway','Boston'],
+  ['J',1,'Jun 16','Argentina','Algeria','Kansas City'],
+  ['J',1,'Jun 16','Austria','Jordan','San Francisco'],
+  ['K',1,'Jun 17','Portugal','Congo DR','Houston'],
+  ['K',1,'Jun 17','Uzbekistan','Colombia','Mexico City'],
+  ['L',1,'Jun 17','England','Croatia','Dallas'],
+  ['L',1,'Jun 17','Ghana','Panama','Toronto'],
+  // MATCHDAY 2
+  ['A',2,'Jun 18','Czechia','South Africa','Atlanta'],
+  ['A',2,'Jun 18','Mexico','South Korea','Guadalajara'],
+  ['B',2,'Jun 18','Switzerland','Bosnia & Herz.','Los Angeles'],
+  ['B',2,'Jun 18','Canada','Qatar','Vancouver'],
+  ['C',2,'Jun 19','Scotland','Morocco','Boston'],
+  ['C',2,'Jun 19','Brazil','Haiti','Philadelphia'],
+  ['D',2,'Jun 19','United States','Australia','Seattle'],
+  ['D',2,'Jun 19','Turkey','Paraguay','San Francisco'],
+  ['E',2,'Jun 20','Germany','Côte d\'Ivoire','Toronto'],
+  ['E',2,'Jun 20','Ecuador','Curaçao','Kansas City'],
+  ['F',2,'Jun 20','Netherlands','Sweden','Houston'],
+  ['F',2,'Jun 20','Tunisia','Japan','Guadalupe'],
+  ['G',2,'Jun 21','Belgium','Iran','Los Angeles'],
+  ['G',2,'Jun 21','New Zealand','Egypt','Vancouver'],
+  ['H',2,'Jun 21','Spain','Saudi Arabia','Atlanta'],
+  ['H',2,'Jun 21','Uruguay','Cabo Verde','Miami'],
+  ['I',2,'Jun 22','France','Iraq','Philadelphia'],
+  ['I',2,'Jun 22','Norway','Senegal','New Jersey'],
+  ['J',2,'Jun 22','Argentina','Austria','Dallas'],
+  ['J',2,'Jun 22','Jordan','Algeria','San Francisco'],
+  ['K',2,'Jun 23','Portugal','Uzbekistan','Houston'],
+  ['K',2,'Jun 23','Colombia','Congo DR','Guadalajara'],
+  ['L',2,'Jun 23','England','Ghana','Boston'],
+  ['L',2,'Jun 23','Panama','Croatia','Toronto'],
+  // MATCHDAY 3
+  ['A',3,'Jun 24','Czechia','Mexico','Mexico City'],
+  ['A',3,'Jun 24','South Africa','South Korea','Guadalupe'],
+  ['B',3,'Jun 24','Switzerland','Canada','Vancouver'],
+  ['B',3,'Jun 24','Bosnia & Herz.','Qatar','Seattle'],
+  ['C',3,'Jun 24','Scotland','Brazil','Miami'],
+  ['C',3,'Jun 24','Morocco','Haiti','Atlanta'],
+  ['D',3,'Jun 25','Turkey','United States','Los Angeles'],
+  ['D',3,'Jun 25','Paraguay','Australia','San Francisco'],
+  ['E',3,'Jun 25','Ecuador','Germany','New Jersey'],
+  ['E',3,'Jun 25','Curaçao','Côte d\'Ivoire','Philadelphia'],
+  ['F',3,'Jun 25','Japan','Sweden','Dallas'],
+  ['F',3,'Jun 25','Tunisia','Netherlands','Kansas City'],
+  ['G',3,'Jun 26','Egypt','Iran','Seattle'],
+  ['G',3,'Jun 26','New Zealand','Belgium','Vancouver'],
+  ['H',3,'Jun 26','Cabo Verde','Saudi Arabia','Houston'],
+  ['H',3,'Jun 26','Uruguay','Spain','Guadalajara'],
+  ['I',3,'Jun 26','Norway','France','Boston'],
+  ['I',3,'Jun 26','Senegal','Iraq','Toronto'],
+  ['J',3,'Jun 27','Algeria','Austria','Kansas City'],
+  ['J',3,'Jun 27','Jordan','Argentina','Dallas'],
+  ['K',3,'Jun 27','Colombia','Portugal','Miami'],
+  ['K',3,'Jun 27','Congo DR','Uzbekistan','Atlanta'],
+  ['L',3,'Jun 27','Panama','England','New Jersey'],
+  ['L',3,'Jun 27','Croatia','Ghana','Philadelphia'],
+];
+
+// Convert American moneyline string to implied probability (0-100)
+function oddsToImplied(oddsStr) {
+  const n = parseInt(oddsStr.replace('+',''), 10);
+  if (isNaN(n)) return 50;
+  return n > 0 ? (100 / (n + 100)) * 100 : ((-n) / (-n + 100)) * 100;
+}
+
+function matchRowHTML(f) {
+  const [grp, md, date, homeN, awayN, venue] = f;
+  const h = T(homeN), a = T(awayN);
+
+  // Odds-based bar: normalise implied probabilities of the two teams
+  const rawH = oddsToImplied(h.odds);
+  const rawA = oddsToImplied(a.odds);
+  const sum  = rawH + rawA;
+  const pctH = (rawH / sum * 100).toFixed(1);
+  const pctA = (100 - parseFloat(pctH)).toFixed(1);
+
+  // Higher transfer value gets green name
+  const hIsRicher = h.value >= a.value;
+  const hNameStyle = hIsRicher ? 'color:var(--accent)' : '';
+  const aNameStyle = !hIsRicher ? 'color:var(--accent)' : '';
+
+  return `
+    <div class="matchup-card">
+      <div class="matchup-meta">
+        <span class="matchup-group-tag">${date} · ${venue}</span>
+      </div>
+      <div class="matchup-teams">
+        <div class="matchup-team">
+          <span class="matchup-team-flag">${h.flag}</span>
+          <div>
+            <div class="matchup-team-name team-link" data-team="${h.name}" style="${hNameStyle}">${h.name}</div>
+            <div class="matchup-team-val">${fmtVal(h.value)} · FIFA #${h.fifa}</div>
+          </div>
+        </div>
+        <div class="matchup-vs">VS</div>
+        <div class="matchup-team right">
+          <span class="matchup-team-flag">${a.flag}</span>
+          <div style="text-align:right">
+            <div class="matchup-team-name team-link" data-team="${a.name}" style="${aNameStyle}">${a.name}</div>
+            <div class="matchup-team-val">${fmtVal(a.value)} · FIFA #${a.fifa}</div>
+          </div>
+        </div>
+      </div>
+      <div class="matchup-bar-section">
+        <div class="matchup-bar-dual">
+          <div class="matchup-bar-a" style="width:${pctH}%"></div>
+          <div class="matchup-bar-b" style="width:${pctA}%"></div>
+        </div>
+        <div class="matchup-bar-labels">
+          <span>${h.name}: ${pctH}% win prob. per bookies</span>
+          <span>${a.name}: ${pctA}%</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMatches(filterGroup) {
+  const container = document.getElementById('matches-container');
+  container.innerHTML = '';
+  const groupsToShow = filterGroup === 'all' ? groupNames : [filterGroup];
+  groupsToShow.forEach(g => {
+    const gFix = fixtures.filter(f => f[0] === g);
+    let inner = '';
+    [1,2,3].forEach(md => {
+      const dayFix = gFix.filter(f => f[1] === md);
+      if (!dayFix.length) return;
+      inner += `<div class="match-day-label">Matchday ${md} · ${dayFix[0][2]}</div>`;
+      inner += dayFix.map(matchRowHTML).join('');
+    });
+    container.innerHTML += `
+      <div class="match-group-block">
+        <div class="match-group-heading">Group ${g}</div>
+        ${inner}
+      </div>
+    `;
+  });
+}
+
+function filterMatchGroup(g, btn) {
+  document.querySelectorAll('.mg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMatches(g);
+}
+
+// build group filter buttons
+const mgFilters = document.getElementById('match-group-filters');
+mgFilters.innerHTML = `<button class="mg-btn all active" onclick="filterMatchGroup('all', this)">All</button>` +
+  groupNames.map(g => `<button class="mg-btn" onclick="filterMatchGroup('${g}', this)">${g}</button>`).join('');
+renderMatches('all');
+
+// ─── TEAMS GRID ──────────────────────────────────────────────────────────────
+const teamGrid = document.getElementById('team-grid');
+sorted.forEach((t, idx) => {
+  teamGrid.innerHTML += `
+    <div class="team-card" data-team-idx="${idx}">
+      <span class="team-card-flag">${t.flag}</span>
+      <span class="team-card-name">${t.name}</span>
+      <span class="team-card-group">Group ${t.group}</span>
+      <span class="team-card-val">${fmtVal(t.value)}</span>
+    </div>
+  `;
+});
+teamGrid.addEventListener('click', e => {
+  const card = e.target.closest('.team-card');
+  if (!card) return;
+  openSquad(sorted[+card.dataset.teamIdx].name);
+});
+
+// ─── SQUAD PANEL (static data) ───────────────────────────────────────────────
+// WC2026 static squads. group: GK/DEF/MID/ATT. Values est. Transfermarkt mid-2025.
+const SQUADS = {
+  "France": [[1, "Mike Maignan", "AC Milan", "GK", "GK", "€30M"], [16, "Brice Samba", "Rennes", "GK", "GK", "€10M"], [23, "Lucas Chevalier", "PSG", "GK", "GK", "€28M"], [2, "Jules Koundé", "Barcelona", "RB", "DEF", "€60M"], [3, "Lucas Hernández", "PSG", "LB", "DEF", "€18M"], [4, "Dayot Upamecano", "Bayern", "CB", "DEF", "€60M"], [5, "Ibrahima Konaté", "Liverpool", "CB", "DEF", "€55M"], [13, "William Saliba", "Arsenal", "CB", "DEF", "€80M"], [21, "Lucas Digne", "Aston Villa", "LB", "DEF", "€12M"], [22, "Theo Hernández", "Al-Hilal", "LB", "DEF", "€25M"], [24, "Malo Gusto", "Chelsea", "RB", "DEF", "€40M"], [15, "Maxence Lacroix", "Crystal Palace", "CB", "DEF", "€35M"], [6, "Aurélien Tchouaméni", "Real Madrid", "DM", "MID", "€80M"], [8, "Manu Koné", "Roma", "CM", "MID", "€45M"], [14, "Adrien Rabiot", "AC Milan", "CM", "MID", "€30M"], [17, "Warren Zaïre-Emery", "PSG", "CM", "MID", "€60M"], [12, "N'Golo Kanté", "Al-Ittihad", "DM", "MID", "€12M"], [7, "Ousmane Dembélé", "PSG", "RW", "ATT", "€90M"], [9, "Marcus Thuram", "Inter", "ST", "ATT", "€70M"], [10, "Kylian Mbappé", "Real Madrid", "ST", "ATT", "€180M"], [11, "Bradley Barcola", "PSG", "LW", "ATT", "€75M"], [18, "Rayan Cherki", "Man City", "AM", "ATT", "€55M"], [19, "Michael Olise", "Bayern", "RW", "ATT", "€90M"], [20, "Désiré Doué", "PSG", "AM", "ATT", "€80M"], [25, "Maghnes Akliouche", "Monaco", "AM", "ATT", "€45M"], [26, "Jean-Philippe Mateta", "Crystal Palace", "ST", "ATT", "€40M"]],
+  "Spain": [[1, "Unai Simón", "Athletic Bilbao", "GK", "GK", "€25M"], [23, "David Raya", "Arsenal", "GK", "GK", "€35M"], [13, "Álex Remiro", "Real Sociedad", "GK", "GK", "€18M"], [2, "Pedro Porro", "Tottenham", "RB", "DEF", "€45M"], [3, "Robin Le Normand", "Atlético", "CB", "DEF", "€40M"], [4, "Pau Cubarsí", "Barcelona", "CB", "DEF", "€80M"], [5, "Dani Vivian", "Athletic Bilbao", "CB", "DEF", "€35M"], [12, "Marc Cucurella", "Chelsea", "LB", "DEF", "€45M"], [14, "Aymeric Laporte", "Athletic Bilbao", "CB", "DEF", "€18M"], [24, "Dean Huijsen", "Real Madrid", "CB", "DEF", "€60M"], [20, "Alejandro Grimaldo", "Leverkusen", "LB", "DEF", "€40M"], [6, "Mikel Merino", "Arsenal", "CM", "MID", "€50M"], [8, "Fabián Ruiz", "PSG", "CM", "MID", "€55M"], [10, "Dani Olmo", "Barcelona", "AM", "MID", "€60M"], [16, "Rodri", "Man City", "DM", "MID", "€110M"], [18, "Martín Zubimendi", "Arsenal", "DM", "MID", "€65M"], [26, "Pedri", "Barcelona", "CM", "MID", "€100M"], [7, "Álvaro Morata", "Como", "ST", "ATT", "€12M"], [9, "Mikel Oyarzabal", "Real Sociedad", "ST", "ATT", "€40M"], [11, "Ferran Torres", "Barcelona", "LW", "ATT", "€45M"], [15, "Nico Williams", "Athletic Bilbao", "LW", "ATT", "€70M"], [17, "Lamine Yamal", "Barcelona", "RW", "ATT", "€180M"], [19, "Yeremy Pino", "Crystal Palace", "RW", "ATT", "€35M"], [21, "Mikel Merino", "Arsenal", "ST", "ATT", "€50M"], [22, "Samu Aghehowa", "Porto", "ST", "ATT", "€50M"], [25, "Marc Casadó", "Barcelona", "DM", "MID", "€30M"]],
+  "England": [[1, "Jordan Pickford", "Everton", "GK", "GK", "€20M"], [13, "Dean Henderson", "Crystal Palace", "GK", "GK", "€18M"], [23, "James Trafford", "Man City", "GK", "GK", "€30M"], [2, "Trent Alexander-Arnold", "Real Madrid", "RB", "DEF", "€60M"], [3, "Myles Lewis-Skelly", "Arsenal", "LB", "DEF", "€55M"], [5, "Marc Guéhi", "Crystal Palace", "CB", "DEF", "€55M"], [6, "John Stones", "Man City", "CB", "DEF", "€30M"], [12, "Ezri Konsa", "Aston Villa", "CB", "DEF", "€40M"], [14, "Levi Colwill", "Chelsea", "CB", "DEF", "€55M"], [15, "Reece James", "Chelsea", "RB", "DEF", "€45M"], [16, "Tino Livramento", "Newcastle", "RB", "DEF", "€45M"], [21, "Djed Spence", "Tottenham", "LB", "DEF", "€30M"], [4, "Declan Rice", "Arsenal", "DM", "MID", "€120M"], [8, "Jude Bellingham", "Real Madrid", "CM", "MID", "€180M"], [10, "Cole Palmer", "Chelsea", "AM", "MID", "€130M"], [17, "Adam Wharton", "Crystal Palace", "DM", "MID", "€45M"], [22, "Morgan Rogers", "Aston Villa", "AM", "MID", "€60M"], [26, "Elliot Anderson", "Nottingham Forest", "CM", "MID", "€45M"], [7, "Bukayo Saka", "Arsenal", "RW", "ATT", "€140M"], [9, "Harry Kane", "Bayern", "ST", "ATT", "€90M"], [11, "Anthony Gordon", "Newcastle", "LW", "ATT", "€60M"], [18, "Marcus Rashford", "Aston Villa", "LW", "ATT", "€45M"], [19, "Eberechi Eze", "Arsenal", "AM", "ATT", "€70M"], [20, "Phil Foden", "Man City", "AM", "ATT", "€110M"], [24, "Jarrod Bowen", "West Ham", "RW", "ATT", "€45M"], [25, "Ollie Watkins", "Aston Villa", "ST", "ATT", "€50M"]],
+  "Portugal": [[1, "Diogo Costa", "Porto", "GK", "GK", "€45M"], [12, "José Sá", "Wolves", "GK", "GK", "€12M"], [22, "Rui Patrício", "free agent", "GK", "GK", "€1M"], [2, "Nélson Semedo", "Fenerbahçe", "RB", "DEF", "€10M"], [3, "Rúben Dias", "Man City", "CB", "DEF", "€70M"], [4, "Gonçalo Inácio", "Sporting CP", "CB", "DEF", "€55M"], [5, "António Silva", "Benfica", "CB", "DEF", "€45M"], [13, "Renato Veiga", "Villarreal", "CB", "DEF", "€35M"], [19, "Nuno Mendes", "PSG", "LB", "DEF", "€80M"], [20, "João Cancelo", "Al-Hilal", "RB", "DEF", "€25M"], [24, "Diogo Leite", "Union Berlin", "CB", "DEF", "€20M"], [6, "João Palhinha", "Tottenham", "DM", "MID", "€45M"], [8, "Bruno Fernandes", "Man Utd", "AM", "MID", "€60M"], [14, "João Neves", "PSG", "CM", "MID", "€80M"], [16, "Vitinha", "PSG", "CM", "MID", "€90M"], [18, "Rúben Neves", "Al-Hilal", "DM", "MID", "€25M"], [23, "João Mário", "free agent", "CM", "MID", "€4M"], [7, "Cristiano Ronaldo", "Al-Nassr", "ST", "ATT", "€12M"], [9, "Gonçalo Ramos", "PSG", "ST", "ATT", "€55M"], [10, "Bernardo Silva", "Man City", "AM", "ATT", "€50M"], [11, "Rafael Leão", "AC Milan", "LW", "ATT", "€75M"], [15, "João Félix", "Al-Nassr", "AM", "ATT", "€30M"], [17, "Pedro Neto", "Chelsea", "RW", "ATT", "€50M"], [21, "Diogo Jota", "Liverpool", "ST", "ATT", "€55M"], [25, "Francisco Conceição", "Juventus", "RW", "ATT", "€35M"], [26, "Pedro Gonçalves", "Sporting CP", "AM", "ATT", "€30M"]],
+  "Germany": [[1, "Marc-André ter Stegen", "Barcelona", "GK", "GK", "€18M"], [12, "Oliver Baumann", "Hoffenheim", "GK", "GK", "€4M"], [22, "Alexander Nübel", "Stuttgart", "GK", "GK", "€22M"], [2, "Antonio Rüdiger", "Real Madrid", "CB", "DEF", "€25M"], [3, "David Raum", "RB Leipzig", "LB", "DEF", "€30M"], [4, "Jonathan Tah", "Bayern", "CB", "DEF", "€40M"], [5, "Nico Schlotterbeck", "Dortmund", "CB", "DEF", "€45M"], [6, "Joshua Kimmich", "Bayern", "RB", "DEF", "€50M"], [15, "Nnamdi Collins", "Frankfurt", "CB", "DEF", "€25M"], [16, "Waldemar Anton", "Dortmund", "CB", "DEF", "€22M"], [18, "Maximilian Mittelstädt", "Stuttgart", "LB", "DEF", "€28M"], [8, "Leon Goretzka", "Bayern", "CM", "MID", "€30M"], [10, "Jamal Musiala", "Bayern", "AM", "MID", "€140M"], [14, "Robert Andrich", "Leverkusen", "DM", "MID", "€25M"], [17, "Florian Wirtz", "Liverpool", "AM", "MID", "€130M"], [21, "Aleksandar Pavlović", "Bayern", "DM", "MID", "€45M"], [23, "Angelo Stiller", "Stuttgart", "DM", "MID", "€45M"], [7, "Kai Havertz", "Arsenal", "ST", "ATT", "€65M"], [9, "Niclas Füllkrug", "West Ham", "ST", "ATT", "€15M"], [11, "Nick Woltemade", "Newcastle", "ST", "ATT", "€55M"], [13, "Karim Adeyemi", "Dortmund", "LW", "ATT", "€40M"], [19, "Leroy Sané", "Galatasaray", "RW", "ATT", "€35M"], [20, "Serge Gnabry", "Bayern", "RW", "ATT", "€35M"], [24, "Jamie Gittens", "Chelsea", "LW", "ATT", "€55M"], [25, "Florian Wirtz", "Liverpool", "AM", "MID", "€130M"], [26, "Deniz Undav", "Stuttgart", "ST", "ATT", "€40M"]],
+  "Brazil": [[1, "Alisson", "Liverpool", "GK", "GK", "€30M"], [12, "Bento", "Al-Nassr", "GK", "GK", "€18M"], [23, "Ederson", "Fenerbahçe", "GK", "GK", "€20M"], [2, "Danilo", "Flamengo", "RB", "DEF", "€6M"], [3, "Marquinhos", "PSG", "CB", "DEF", "€30M"], [4, "Gabriel Magalhães", "Arsenal", "CB", "DEF", "€65M"], [6, "Alex Sandro", "Flamengo", "LB", "DEF", "€3M"], [13, "Wesley", "Roma", "RB", "DEF", "€30M"], [14, "Éder Militão", "Real Madrid", "CB", "DEF", "€50M"], [22, "Vanderson", "Monaco", "RB", "DEF", "€35M"], [24, "Carlos Augusto", "Inter", "LB", "DEF", "€30M"], [15, "Beraldo", "PSG", "CB", "DEF", "€30M"], [5, "Bruno Guimarães", "Newcastle", "DM", "MID", "€70M"], [8, "Lucas Paquetá", "West Ham", "AM", "MID", "€40M"], [17, "Joelinton", "Newcastle", "CM", "MID", "€40M"], [16, "André", "Wolves", "DM", "MID", "€30M"], [18, "Andrey Santos", "Chelsea", "CM", "MID", "€35M"], [25, "Gerson", "Flamengo", "CM", "MID", "€25M"], [7, "Vinícius Jr", "Real Madrid", "LW", "ATT", "€170M"], [9, "Matheus Cunha", "Man Utd", "ST", "ATT", "€55M"], [10, "Rodrygo", "Real Madrid", "RW", "ATT", "€90M"], [11, "Raphinha", "Barcelona", "RW", "ATT", "€90M"], [19, "Estêvão", "Chelsea", "RW", "ATT", "€60M"], [20, "Endrick", "Real Madrid", "ST", "ATT", "€50M"], [21, "Gabriel Martinelli", "Arsenal", "LW", "ATT", "€55M"], [26, "João Pedro", "Chelsea", "ST", "ATT", "€55M"]],
+  "Argentina": [[1, "Emiliano Martínez", "Aston Villa", "GK", "GK", "€25M"], [12, "Gerónimo Rulli", "Marseille", "GK", "GK", "€12M"], [23, "Walter Benítez", "PSV", "GK", "GK", "€5M"], [2, "Nahuel Molina", "Atlético", "RB", "DEF", "€25M"], [3, "Nicolás Tagliafico", "Lyon", "LB", "DEF", "€6M"], [4, "Gonzalo Montiel", "River Plate", "RB", "DEF", "€10M"], [6, "Germán Pezzella", "River Plate", "CB", "DEF", "€3M"], [13, "Cristian Romero", "Tottenham", "CB", "DEF", "€55M"], [19, "Nicolás Otamendi", "Benfica", "CB", "DEF", "€3M"], [25, "Lisandro Martínez", "Man Utd", "CB", "DEF", "€40M"], [8, "Marcos Acuña", "River Plate", "LB", "DEF", "€4M"], [26, "Nahuel Molina", "Atlético", "RB", "DEF", "€25M"], [5, "Leandro Paredes", "Boca Juniors", "DM", "MID", "€8M"], [7, "Rodrigo De Paul", "Inter Miami", "CM", "MID", "€18M"], [14, "Exequiel Palacios", "Leverkusen", "CM", "MID", "€35M"], [20, "Alexis Mac Allister", "Liverpool", "CM", "MID", "€70M"], [24, "Enzo Fernández", "Chelsea", "CM", "MID", "€70M"], [18, "Giovani Lo Celso", "Real Betis", "AM", "MID", "€18M"], [9, "Julián Álvarez", "Atlético", "ST", "ATT", "€90M"], [10, "Lionel Messi", "Inter Miami", "RW", "ATT", "€18M"], [11, "Ángel Di María", "Rosario Central", "RW", "ATT", "€3M"], [15, "Nicolás González", "Juventus", "LW", "ATT", "€28M"], [16, "Giuliano Simeone", "Atlético", "RW", "ATT", "€35M"], [17, "Alejandro Garnacho", "Chelsea", "LW", "ATT", "€45M"], [21, "Lautaro Martínez", "Inter", "ST", "ATT", "€90M"], [22, "Thiago Almada", "Atlético", "AM", "ATT", "€40M"]],
+  "Netherlands": [[1, "Bart Verbruggen", "Brighton", "GK", "GK", "€35M"], [13, "Mark Flekken", "Leverkusen", "GK", "GK", "€12M"], [23, "Nick Olij", "Sparta", "GK", "GK", "€5M"], [2, "Denzel Dumfries", "Inter", "RB", "DEF", "€35M"], [3, "Matthijs de Ligt", "Man Utd", "CB", "DEF", "€45M"], [4, "Virgil van Dijk", "Liverpool", "CB", "DEF", "€28M"], [5, "Nathan Aké", "Man City", "CB", "DEF", "€30M"], [15, "Micky van de Ven", "Tottenham", "CB", "DEF", "€65M"], [17, "Daley Blind", "free agent", "LB", "DEF", "€1M"], [22, "Denzel Dumfries", "Inter", "RB", "DEF", "€35M"], [12, "Jurriën Timber", "Arsenal", "RB", "DEF", "€55M"], [20, "Lutsharel Geertruida", "RB Leipzig", "RB", "DEF", "€30M"], [6, "Stefan de Vrij", "Inter", "CB", "DEF", "€10M"], [8, "Ryan Gravenberch", "Liverpool", "CM", "MID", "€75M"], [14, "Tijjani Reijnders", "Man City", "CM", "MID", "€70M"], [21, "Frenkie de Jong", "Barcelona", "CM", "MID", "€50M"], [18, "Jerdy Schouten", "PSV", "DM", "MID", "€25M"], [7, "Xavi Simons", "Tottenham", "AM", "ATT", "€80M"], [9, "Memphis Depay", "Corinthians", "ST", "ATT", "€8M"], [10, "Cody Gakpo", "Liverpool", "LW", "ATT", "€65M"], [11, "Donyell Malen", "Aston Villa", "RW", "ATT", "€30M"], [19, "Wout Weghorst", "Ajax", "ST", "ATT", "€6M"], [24, "Brian Brobbey", "Ajax", "ST", "ATT", "€30M"], [25, "Noa Lang", "PSV", "LW", "ATT", "€25M"], [26, "Emanuel Emegha", "Strasbourg", "ST", "ATT", "€30M"]],
+  "Belgium": [[1, "Thibaut Courtois", "Real Madrid", "GK", "GK", "€30M"], [12, "Matz Sels", "Nottingham Forest", "GK", "GK", "€12M"], [13, "Koen Casteels", "Al-Qadsiah", "GK", "GK", "€6M"], [2, "Zeno Debast", "Sporting CP", "CB", "DEF", "€30M"], [3, "Arthur Theate", "Frankfurt", "CB", "DEF", "€25M"], [4, "Wout Faes", "Leicester", "CB", "DEF", "€20M"], [5, "Jan Vertonghen", "Anderlecht", "CB", "DEF", "€1M"], [15, "Timothy Castagne", "Fulham", "RB", "DEF", "€15M"], [21, "Thomas Meunier", "Lille", "RB", "DEF", "€4M"], [24, "Maxim De Cuyper", "Brighton", "LB", "DEF", "€20M"], [22, "Joaquín Seys", "Club Brugge", "RB", "DEF", "€12M"], [6, "Youri Tielemans", "Aston Villa", "CM", "MID", "€35M"], [8, "Amadou Onana", "Aston Villa", "DM", "MID", "€45M"], [11, "Charles De Ketelaere", "Atalanta", "AM", "MID", "€40M"], [18, "Orel Mangala", "Everton", "DM", "MID", "€18M"], [20, "Nicolas Raskin", "Rangers", "DM", "MID", "€15M"], [25, "Arthur Vermeeren", "RB Leipzig", "DM", "MID", "€20M"], [7, "Kevin De Bruyne", "Napoli", "AM", "MID", "€30M"], [9, "Romelu Lukaku", "Napoli", "ST", "ATT", "€20M"], [10, "Leandro Trossard", "Arsenal", "LW", "ATT", "€30M"], [14, "Dodi Lukebakio", "Sevilla", "RW", "ATT", "€25M"], [16, "Jérémy Doku", "Man City", "LW", "ATT", "€60M"], [17, "Loïs Openda", "Juventus", "ST", "ATT", "€40M"], [19, "Johan Bakayoko", "RB Leipzig", "RW", "ATT", "€35M"], [23, "Malick Fofana", "Lyon", "LW", "ATT", "€40M"]],
+  "Norway": [[1, "Ørjan Nyland", "Sevilla", "GK", "GK", "€2M"], [12, "Egil Selvik", "Haugesund", "GK", "GK", "€1M"], [23, "Mads Hansen", "Bodø/Glimt", "GK", "GK", "€2M"], [2, "Andreas Hanche-Olsen", "Mainz", "CB", "DEF", "€10M"], [3, "Marius Høibråten", "Union Berlin", "CB", "DEF", "€6M"], [4, "Leo Østigård", "Rennes", "CB", "DEF", "€12M"], [5, "Kristoffer Ajer", "Brentford", "CB", "DEF", "€15M"], [6, "Julian Ryerson", "Dortmund", "RB", "DEF", "€20M"], [16, "Birger Meling", "Rennes", "LB", "DEF", "€5M"], [17, "David Møller Wolfe", "Nice", "LB", "DEF", "€8M"], [21, "Fredrik Bjørkan", "Bodø/Glimt", "LB", "DEF", "€4M"], [7, "Antonio Nusa", "RB Leipzig", "LW", "MID", "€35M"], [8, "Sander Berge", "Fulham", "CM", "MID", "€25M"], [10, "Martin Ødegaard", "Arsenal", "AM", "MID", "€90M"], [13, "Patrick Berg", "Bodø/Glimt", "DM", "MID", "€6M"], [15, "Morten Thorsby", "Genoa", "CM", "MID", "€6M"], [18, "Aron Dønnum", "Standard Liège", "RW", "MID", "€6M"], [20, "Jørgen Strand Larsen", "Wolves", "ST", "ATT", "€30M"], [9, "Erling Haaland", "Man City", "ST", "ATT", "€180M"], [11, "Alexander Sørloth", "Atlético", "ST", "ATT", "€30M"], [14, "Oscar Bobb", "Man City", "RW", "ATT", "€35M"], [19, "Andreas Schjelderup", "Benfica", "LW", "ATT", "€18M"], [22, "Kristian Thorstvedt", "Sassuolo", "AM", "ATT", "€12M"]],
+  "Croatia": [[1, "Dominik Livaković", "Girona", "GK", "GK", "€10M"], [12, "Ivica Ivušić", "Pafos", "GK", "GK", "€3M"], [23, "Nediljko Labrović", "Rijeka", "GK", "GK", "€3M"], [2, "Josip Stanišić", "Bayern", "RB", "DEF", "€30M"], [3, "Marin Pongračić", "Fiorentina", "CB", "DEF", "€15M"], [5, "Martin Erlić", "Bologna", "CB", "DEF", "€12M"], [6, "Josip Šutalo", "Ajax", "CB", "DEF", "€25M"], [19, "Borna Sosa", "free agent", "LB", "DEF", "€6M"], [22, "Josip Juranović", "Union Berlin", "RB", "DEF", "€10M"], [4, "Josko Gvardiol", "Man City", "CB", "DEF", "€75M"], [21, "Domagoj Vida", "free agent", "CB", "DEF", "€1M"], [8, "Mateo Kovačić", "Man City", "CM", "MID", "€40M"], [10, "Luka Modrić", "AC Milan", "CM", "MID", "€4M"], [11, "Marcelo Brozović", "Al-Nassr", "DM", "MID", "€12M"], [7, "Lovro Majer", "Wolfsburg", "AM", "MID", "€18M"], [13, "Nikola Vlašić", "Torino", "AM", "MID", "€10M"], [14, "Luka Sučić", "Real Sociedad", "CM", "MID", "€25M"], [15, "Mario Pašalić", "Atalanta", "AM", "MID", "€18M"], [9, "Andrej Kramarić", "Hoffenheim", "ST", "ATT", "€6M"], [17, "Igor Matanović", "Frankfurt", "ST", "ATT", "€10M"], [18, "Ante Budimir", "Osasuna", "ST", "ATT", "€8M"], [16, "Martin Baturina", "Como", "AM", "MID", "€18M"], [20, "Petar Musa", "Benfica", "ST", "ATT", "€25M"]],
+  "Uruguay": [[1, "Sergio Rochet", "Internacional", "GK", "GK", "€4M"], [12, "Santiago Mele", "Junior", "GK", "GK", "€3M"], [23, "Franco Israel", "Sporting CP", "GK", "GK", "€6M"], [2, "José María Giménez", "Atlético", "CB", "DEF", "€25M"], [3, "Sebastián Cáceres", "América", "CB", "DEF", "€10M"], [4, "Ronald Araújo", "Barcelona", "CB", "DEF", "€55M"], [13, "Guillermo Varela", "Flamengo", "RB", "DEF", "€6M"], [17, "Matías Viña", "Flamengo", "LB", "DEF", "€8M"], [19, "Sebastián Boselli", "Estudiantes", "CB", "DEF", "€5M"], [22, "Nahitan Nández", "Al-Qadsiah", "RB", "DEF", "€6M"], [6, "Rodrigo Bentancur", "Tottenham", "CM", "MID", "€30M"], [5, "Manuel Ugarte", "Man Utd", "DM", "MID", "€35M"], [8, "Facundo Pellistri", "Panathinaikos", "RW", "MID", "€8M"], [10, "Giorgian de Arrascaeta", "Flamengo", "AM", "MID", "€18M"], [15, "Federico Valverde", "Real Madrid", "CM", "MID", "€120M"], [16, "Nicolás Fonseca", "River Plate", "CM", "MID", "€8M"], [7, "Nicolás de la Cruz", "Flamengo", "AM", "MID", "€15M"], [9, "Luis Suárez", "Inter Miami", "ST", "ATT", "€3M"], [11, "Facundo Torres", "Palmeiras", "LW", "ATT", "€18M"], [18, "Maxi Araújo", "Sporting CP", "LW", "ATT", "€15M"], [20, "Brian Rodríguez", "América", "RW", "ATT", "€12M"], [21, "Darwin Núñez", "Al-Hilal", "ST", "ATT", "€45M"], [24, "Rodrigo Aguirre", "Monterrey", "ST", "ATT", "€6M"]],
+  "Switzerland": [[1, "Yann Sommer", "Inter", "GK", "GK", "€8M"], [12, "Gregor Kobel", "Dortmund", "GK", "GK", "€35M"], [21, "Pascal Loretz", "Luzern", "GK", "GK", "€2M"], [2, "Silvan Widmer", "Mainz", "RB", "DEF", "€4M"], [3, "Nico Elvedi", "Mönchengladbach", "CB", "DEF", "€12M"], [4, "Nico Schmidt", "Lugano", "CB", "DEF", "€3M"], [5, "Manuel Akanji", "Inter", "CB", "DEF", "€35M"], [13, "Ricardo Rodríguez", "Real Betis", "LB", "DEF", "€2M"], [22, "Fabian Schär", "Newcastle", "CB", "DEF", "€6M"], [20, "Aurèle Amenda", "Frankfurt", "CB", "DEF", "€10M"], [18, "Miro Muheim", "Hamburg", "LB", "DEF", "€8M"], [6, "Denis Zakaria", "Monaco", "DM", "MID", "€30M"], [8, "Remo Freuler", "Bologna", "CM", "MID", "€8M"], [10, "Granit Xhaka", "Sunderland", "CM", "MID", "€12M"], [15, "Michel Aebischer", "Pisa", "CM", "MID", "€12M"], [23, "Vincent Sierro", "Toulouse", "CM", "MID", "€8M"], [17, "Ardon Jashari", "AC Milan", "CM", "MID", "€30M"], [7, "Breel Embolo", "Rennes", "ST", "ATT", "€15M"], [9, "Zeki Amdouni", "Benfica", "ST", "ATT", "€18M"], [11, "Renato Steffen", "Lugano", "LW", "ATT", "€3M"], [14, "Ruben Vargas", "Sevilla", "LW", "ATT", "€18M"], [16, "Johan Manzambi", "Freiburg", "AM", "MID", "€15M"], [19, "Dan Ndoye", "Nottingham Forest", "RW", "ATT", "€35M"], [24, "Joël Monteiro", "Young Boys", "RW", "ATT", "€6M"]],
+  "Sweden": [[1, "Robin Olsen", "free agent", "GK", "GK", "€1M"], [12, "Kristoffer Nordfeldt", "Häcken", "GK", "GK", "€1M"], [23, "Viktor Johansson", "Stoke", "GK", "GK", "€6M"], [2, "Emil Krafth", "Newcastle", "RB", "DEF", "€3M"], [3, "Victor Lindelöf", "Aston Villa", "CB", "DEF", "€8M"], [4, "Isak Hien", "Atalanta", "CB", "DEF", "€35M"], [5, "Gabriel Gudmundsson", "Leeds", "LB", "DEF", "€15M"], [6, "Hjalmar Ekdal", "free agent", "CB", "DEF", "€4M"], [13, "Daniel Svensson", "Dortmund", "LB", "DEF", "€12M"], [15, "Amin Sarr", "Wolfsburg", "CB", "DEF", "€8M"], [7, "Dejan Kulusevski", "Tottenham", "AM", "MID", "€45M"], [8, "Albin Ekdal", "free agent", "DM", "MID", "€1M"], [10, "Emil Forsberg", "NY Red Bulls", "AM", "MID", "€4M"], [16, "Yasin Ayari", "Brighton", "CM", "MID", "€18M"], [17, "Lucas Bergvall", "Tottenham", "CM", "MID", "€40M"], [18, "Jens Cajuste", "Ipswich", "DM", "MID", "€15M"], [9, "Alexander Isak", "Liverpool", "ST", "ATT", "€120M"], [11, "Anthony Elanga", "Newcastle", "RW", "ATT", "€55M"], [14, "Viktor Gyökeres", "Arsenal", "ST", "ATT", "€65M"], [19, "Jesper Karlström", "Lech Poznań", "DM", "MID", "€5M"], [20, "Roony Bardghji", "Copenhagen", "RW", "ATT", "€12M"], [21, "Viktor Claesson", "free agent", "RW", "ATT", "€3M"]],
+  "Austria": [[1, "Patrick Pentz", "Brøndby", "GK", "GK", "€4M"], [12, "Niklas Hedl", "Rapid Wien", "GK", "GK", "€6M"], [23, "Tobias Lawal", "LASK", "GK", "GK", "€3M"], [2, "Maximilian Wöber", "Mönchengladbach", "CB", "DEF", "€12M"], [3, "Gernot Trauner", "Feyenoord", "CB", "DEF", "€4M"], [4, "Kevin Danso", "Tottenham", "CB", "DEF", "€25M"], [5, "Stefan Posch", "Como", "CB", "DEF", "€10M"], [6, "Stefan Lainer", "free agent", "RB", "DEF", "€2M"], [15, "Philipp Lienhart", "Freiburg", "CB", "DEF", "€12M"], [16, "Phillipp Mwene", "Mainz", "LB", "DEF", "€4M"], [21, "Leopold Querfeld", "Union Berlin", "CB", "DEF", "€10M"], [7, "Marcel Sabitzer", "Dortmund", "CM", "MID", "€18M"], [8, "David Alaba", "Real Madrid", "CB", "DEF", "€10M"], [10, "Florian Grillitsch", "Hoffenheim", "DM", "MID", "€6M"], [13, "Nicolas Seiwald", "RB Leipzig", "DM", "MID", "€25M"], [14, "Christoph Baumgartner", "RB Leipzig", "AM", "MID", "€25M"], [19, "Konrad Laimer", "Bayern", "CM", "MID", "€25M"], [9, "Marko Arnautović", "free agent", "ST", "ATT", "€2M"], [11, "Michael Gregoritsch", "Freiburg", "ST", "ATT", "€6M"], [17, "Patrick Wimmer", "Wolfsburg", "LW", "ATT", "€12M"], [18, "Romano Schmid", "Werder Bremen", "AM", "MID", "€12M"], [20, "Konrad Laimer", "Bayern", "CM", "MID", "€25M"], [22, "Maximilian Entrup", "Hamburg", "ST", "ATT", "€5M"], [24, "Junior Adamu", "Freiburg", "ST", "ATT", "€8M"]],
+  "Scotland": [[1, "Angus Gunn", "Forest", "GK", "GK", "€6M"], [12, "Craig Gordon", "Hearts", "GK", "GK", "€1M"], [23, "Cieran Slicker", "Ipswich", "GK", "GK", "€2M"], [2, "Anthony Ralston", "Celtic", "RB", "DEF", "€3M"], [3, "Andy Robertson", "Liverpool", "LB", "DEF", "€15M"], [4, "Scott McKenna", "Las Palmas", "CB", "DEF", "€6M"], [5, "Grant Hanley", "Birmingham", "CB", "DEF", "€2M"], [6, "Kieran Tierney", "Celtic", "LB", "DEF", "€12M"], [15, "Ryan Porteous", "Watford", "CB", "DEF", "€6M"], [16, "Max Johnston", "Sturm Graz", "RB", "DEF", "€6M"], [18, "John Souttar", "Rangers", "CB", "DEF", "€4M"], [7, "John McGinn", "Aston Villa", "CM", "MID", "€18M"], [8, "Billy Gilmour", "Napoli", "DM", "MID", "€18M"], [10, "Scott McTominay", "Napoli", "CM", "MID", "€45M"], [13, "Ryan Christie", "Bournemouth", "CM", "MID", "€10M"], [14, "Ben Doak", "Bournemouth", "RW", "ATT", "€20M"], [22, "Lewis Ferguson", "Bologna", "CM", "MID", "€25M"], [17, "Kenny McLean", "Norwich", "CM", "MID", "€4M"], [9, "Che Adams", "Torino", "ST", "ATT", "€8M"], [11, "Ryan Gauld", "Vancouver", "AM", "MID", "€6M"], [19, "Lyndon Dykes", "Birmingham", "ST", "ATT", "€4M"], [20, "Lawrence Shankland", "Hearts", "ST", "ATT", "€6M"], [21, "George Hirst", "Ipswich", "ST", "ATT", "€6M"]],
+  "Turkey": [[1, "Uğurcan Çakır", "Galatasaray", "GK", "GK", "€25M"], [12, "Altay Bayındır", "Man Utd", "GK", "GK", "€10M"], [23, "Mert Günok", "Beşiktaş", "GK", "GK", "€4M"], [2, "Zeki Çelik", "Roma", "RB", "DEF", "€10M"], [3, "Merih Demiral", "Al-Ahli", "CB", "DEF", "€15M"], [4, "Caglar Söyüncü", "Fenerbahçe", "CB", "DEF", "€8M"], [5, "Abdülkerim Bardakcı", "Galatasaray", "CB", "DEF", "€10M"], [14, "Ferdi Kadıoğlu", "Brighton", "LB", "DEF", "€25M"], [20, "Mert Müldür", "Fenerbahçe", "RB", "DEF", "€8M"], [22, "Kaan Ayhan", "Galatasaray", "CB", "DEF", "€4M"], [15, "Samet Akaydin", "Panathinaikos", "CB", "DEF", "€6M"], [6, "Orkun Kökçü", "Benfica", "CM", "MID", "€30M"], [8, "Hakan Çalhanoğlu", "Inter", "DM", "MID", "€40M"], [10, "Arda Güler", "Real Madrid", "AM", "MID", "€60M"], [16, "İsmail Yüksek", "Fenerbahçe", "DM", "MID", "€15M"], [18, "Salih Özcan", "Dortmund", "DM", "MID", "€12M"], [21, "Yunus Akgün", "Galatasaray", "RW", "MID", "€15M"], [7, "Kerem Aktürkoğlu", "Fenerbahçe", "LW", "ATT", "€25M"], [9, "Barış Alper Yılmaz", "Galatasaray", "RW", "ATT", "€25M"], [11, "Kenan Yıldız", "Juventus", "LW", "ATT", "€70M"], [13, "Yusuf Yazıcı", "free agent", "AM", "MID", "€6M"], [17, "İrfan Can Kahveci", "Fenerbahçe", "AM", "MID", "€12M"], [19, "Semih Kılıçsoy", "Beşiktaş", "ST", "ATT", "€20M"], [24, "Can Uzun", "Frankfurt", "AM", "ATT", "€30M"]],
+  "Ecuador": [[1, "Hernán Galíndez", "Huracán", "GK", "GK", "€1M"], [12, "Alexander Domínguez", "LDU Quito", "GK", "GK", "€1M"], [23, "Gonzalo Valle", "LDU Quito", "GK", "GK", "€3M"], [2, "Félix Torres", "Corinthians", "CB", "DEF", "€10M"], [3, "Piero Hincapié", "Arsenal", "CB", "DEF", "€55M"], [4, "Robert Arboleda", "São Paulo", "CB", "DEF", "€6M"], [5, "Joel Ordóñez", "Club Brugge", "CB", "DEF", "€30M"], [7, "Pervis Estupiñán", "AC Milan", "LB", "DEF", "€30M"], [17, "Ángelo Preciado", "Sporting CP", "RB", "DEF", "€10M"], [22, "Xavier Arreaga", "LDU Quito", "CB", "DEF", "€3M"], [6, "Willian Pacho", "PSG", "CB", "DEF", "€60M"], [8, "Jhegson Méndez", "LAFC", "DM", "MID", "€6M"], [10, "Kendry Páez", "Chelsea", "AM", "MID", "€25M"], [13, "Alan Franco", "Atlanta Utd", "DM", "MID", "€8M"], [14, "Patrik Mercado", "LDU Quito", "DM", "MID", "€6M"], [20, "Jeremy Sarmiento", "Brighton", "RW", "MID", "€6M"], [16, "Jordy Caicedo", "Cluj", "ST", "ATT", "€3M"], [25, "Moisés Caicedo", "Chelsea", "DM", "MID", "€90M"], [9, "Enner Valencia", "Pachuca", "ST", "ATT", "€3M"], [11, "Kevin Rodríguez", "Union SG", "ST", "ATT", "€8M"], [18, "Gonzalo Plata", "Flamengo", "RW", "ATT", "€12M"], [19, "Nilson Angulo", "Anderlecht", "LW", "ATT", "€8M"], [21, "Alan Minda", "Cercle Brugge", "LW", "ATT", "€8M"], [24, "Leonardo Campana", "Inter Miami", "ST", "ATT", "€8M"]],
+  "Colombia": [[1, "Camilo Vargas", "Atlas", "GK", "GK", "€2M"], [12, "Kevin Mier", "Cruz Azul", "GK", "GK", "€6M"], [23, "David Ospina", "Atlético Nacional", "GK", "GK", "€1M"], [2, "Daniel Muñoz", "Crystal Palace", "RB", "DEF", "€25M"], [3, "Jhon Lucumí", "Bologna", "CB", "DEF", "€25M"], [4, "Santiago Arias", "Bahia", "RB", "DEF", "€2M"], [5, "Yerson Mosquera", "Wolves", "CB", "DEF", "€10M"], [13, "Yerry Mina", "Cagliari", "CB", "DEF", "€4M"], [17, "Johan Mojica", "Mallorca", "LB", "DEF", "€3M"], [22, "Dávinson Sánchez", "Galatasaray", "CB", "DEF", "€15M"], [6, "Richard Ríos", "Benfica", "CM", "MID", "€30M"], [8, "Jefferson Lerma", "Crystal Palace", "DM", "MID", "€15M"], [10, "James Rodríguez", "Club León", "AM", "MID", "€4M"], [15, "Mateus Uribe", "free agent", "DM", "MID", "€2M"], [16, "Jorge Carrascal", "Flamengo", "AM", "MID", "€12M"], [20, "Juan Quintero", "River Plate", "AM", "MID", "€4M"], [14, "Kevin Castaño", "River Plate", "DM", "MID", "€12M"], [7, "Luis Díaz", "Bayern", "LW", "ATT", "€75M"], [9, "Jhon Durán", "Fenerbahçe", "ST", "ATT", "€55M"], [11, "Jhon Arias", "Wolves", "RW", "ATT", "€25M"], [18, "Rafael Santos Borré", "Internacional", "ST", "ATT", "€6M"], [19, "Luis Sinisterra", "Cruzeiro", "LW", "ATT", "€15M"], [21, "Daniel Ruiz", "Santos", "AM", "ATT", "€8M"]],
+  "Morocco": [[1, "Yassine Bounou", "Al-Hilal", "GK", "GK", "€15M"], [12, "Munir Mohamedi", "free agent", "GK", "GK", "€1M"], [23, "Mehdi Benabid", "Raja", "GK", "GK", "€2M"], [2, "Achraf Hakimi", "PSG", "RB", "DEF", "€65M"], [3, "Noussair Mazraoui", "Man Utd", "RB", "DEF", "€25M"], [5, "Nayef Aguerd", "Real Sociedad", "CB", "DEF", "€25M"], [6, "Romain Saïss", "free agent", "CB", "DEF", "€2M"], [18, "Jawad El Yamiq", "Valladolid", "CB", "DEF", "€3M"], [20, "Achraf Dari", "Brest", "CB", "DEF", "€6M"], [24, "Adam Masina", "Torino", "LB", "DEF", "€4M"], [4, "Chadi Riad", "Crystal Palace", "CB", "DEF", "€20M"], [8, "Azzedine Ounahi", "Girona", "CM", "MID", "€12M"], [10, "Eljif Elmas", "RB Leipzig", "AM", "MID", "€18M"], [15, "Sofyan Amrabat", "Fenerbahçe", "DM", "MID", "€15M"], [13, "Bilal El Khannouss", "Stuttgart", "AM", "MID", "€30M"], [17, "Sofiane Boufal", "Al-Rayyan", "LW", "MID", "€4M"], [22, "Neil El Aynaoui", "Roma", "CM", "MID", "€20M"], [7, "Hakim Ziyech", "free agent", "RW", "ATT", "€4M"], [9, "Youssef En-Nesyri", "Fenerbahçe", "ST", "ATT", "€20M"], [11, "Brahim Díaz", "Real Madrid", "AM", "ATT", "€60M"], [14, "Abde Ezzalzouli", "Real Betis", "LW", "ATT", "€30M"], [16, "Amine Adli", "Bournemouth", "LW", "ATT", "€25M"], [19, "Ayoub El Kaabi", "Olympiacos", "ST", "ATT", "€12M"], [21, "Eliesse Ben Seghir", "Leverkusen", "AM", "ATT", "€30M"]],
+  "Senegal": [[1, "Édouard Mendy", "Al-Ahli", "GK", "GK", "€10M"], [16, "Seny Dieng", "Middlesbrough", "GK", "GK", "€6M"], [23, "Mory Diaw", "Clermont", "GK", "GK", "€3M"], [2, "Krépin Diatta", "Monaco", "RB", "DEF", "€12M"], [3, "Kalidou Koulibaly", "Al-Hilal", "CB", "DEF", "€8M"], [4, "Abdou Diallo", "Al-Arabi", "CB", "DEF", "€6M"], [5, "Moussa Niakhaté", "Lyon", "CB", "DEF", "€20M"], [12, "Fodé Ballo-Touré", "free agent", "LB", "DEF", "€3M"], [21, "Antoine Mendy", "Nice", "RB", "DEF", "€12M"], [22, "Abdoulaye Seck", "Maccabi Haifa", "CB", "DEF", "€3M"], [15, "Ismail Jakobs", "Galatasaray", "LB", "DEF", "€10M"], [6, "Nampalys Mendy", "Lens", "DM", "MID", "€4M"], [8, "Pape Matar Sarr", "Tottenham", "CM", "MID", "€40M"], [17, "Pape Gueye", "Villarreal", "DM", "MID", "€12M"], [13, "Idrissa Gana Gueye", "Everton", "DM", "MID", "€6M"], [18, "Lamine Camara", "Monaco", "CM", "MID", "€30M"], [7, "Sadio Mané", "Al-Nassr", "LW", "ATT", "€15M"], [9, "Boulaye Dia", "Lazio", "ST", "ATT", "€10M"], [10, "Ismaïla Sarr", "Crystal Palace", "RW", "ATT", "€35M"], [11, "Habib Diarra", "Sunderland", "AM", "ATT", "€30M"], [14, "Iliman Ndiaye", "Everton", "AM", "ATT", "€35M"], [19, "Nicolas Jackson", "Bayern", "ST", "ATT", "€55M"], [20, "Chérif Ndiaye", "Étoile Sahel", "ST", "ATT", "€4M"], [24, "Cheikh Sabaly", "free agent", "RW", "ATT", "€3M"]],
+  "Côte d'Ivoire": [[1, "Yahia Fofana", "Angers", "GK", "GK", "€8M"], [16, "Badra Ali Sangaré", "Sektzia", "GK", "GK", "€1M"], [23, "Mohamed Kone", "ASEC", "GK", "GK", "€1M"], [2, "Ousmane Diomande", "Sporting CP", "CB", "DEF", "€40M"], [3, "Ghislain Konan", "Al-Arabi", "LB", "DEF", "€4M"], [4, "Evan Ndicka", "Roma", "CB", "DEF", "€30M"], [5, "Wilfried Singo", "Galatasaray", "RB", "DEF", "€30M"], [6, "Willy Boly", "Al-Shabab", "CB", "DEF", "€2M"], [12, "Odilon Kossounou", "Atalanta", "CB", "DEF", "€25M"], [21, "Sébastien Haller", "free agent", "ST", "ATT", "€4M"], [20, "Souleymane Diarra", "Lens", "CB", "DEF", "€6M"], [8, "Franck Kessié", "Al-Ahli", "CM", "MID", "€18M"], [10, "Seko Fofana", "Rennes", "CM", "MID", "€15M"], [13, "Ibrahim Sangaré", "Nottingham Forest", "DM", "MID", "€25M"], [15, "Jean Michaël Seri", "free agent", "DM", "MID", "€2M"], [17, "Lazare Amani", "Union SG", "CM", "MID", "€8M"], [14, "Hamed Traorè", "Auxerre", "AM", "MID", "€10M"], [7, "Nicolas Pépé", "Villarreal", "RW", "ATT", "€8M"], [9, "Yan Diomandé", "RB Leipzig", "LW", "ATT", "€18M"], [11, "Jonathan Bamba", "Celta Vigo", "LW", "ATT", "€8M"], [18, "Amad Diallo", "Man Utd", "RW", "ATT", "€40M"], [19, "Simon Adingra", "Sunderland", "LW", "ATT", "€30M"], [22, "Sébastien Haller", "free agent", "ST", "ATT", "€4M"], [24, "Karim Konaté", "RB Salzburg", "ST", "ATT", "€18M"], [25, "David Datro Fofana", "Hoffenheim", "ST", "ATT", "€10M"]],
+  "Egypt": [[1, "Mohamed El Shenawy", "Al Ahly", "GK", "GK", "€2M"], [12, "Mohamed Sobhi", "Pyramids", "GK", "GK", "€1M"], [23, "Mostafa Shobeir", "Al Ahly", "GK", "GK", "€2M"], [2, "Ahmed Fattouh", "Zamalek", "LB", "DEF", "€2M"], [3, "Omar Kamal", "Al Ahly", "CB", "DEF", "€2M"], [4, "Mohamed Abdelmonem", "Nice", "CB", "DEF", "€4M"], [5, "Rami Rabia", "Al Ahly", "CB", "DEF", "€2M"], [6, "Ahmed Hegazy", "free agent", "CB", "DEF", "€1M"], [13, "Ahmed Eid", "Zamalek", "RB", "DEF", "€2M"], [20, "Mohamed Hamdy", "Pyramids", "LB", "DEF", "€2M"], [7, "Mahmoud Trezeguet", "Trabzonspor", "RW", "MID", "€6M"], [8, "Mohamed Elneny", "Al-Jazira", "DM", "MID", "€2M"], [10, "Mohamed Salah", "Liverpool", "RW", "ATT", "€55M"], [15, "Nabil Emad", "Pyramids", "DM", "MID", "€3M"], [17, "Mohamed Magdy", "Al Ahly", "CM", "MID", "€4M"], [19, "Emam Ashour", "Al Ahly", "AM", "MID", "€8M"], [14, "Mostafa Fathi", "Zamalek", "AM", "MID", "€3M"], [9, "Mostafa Mohamed", "Nantes", "ST", "ATT", "€12M"], [11, "Omar Marmoush", "Man City", "ST", "ATT", "€75M"], [18, "Ahmed Sayed Zizo", "Al Ahly", "RW", "ATT", "€6M"], [21, "Trezeguet", "Trabzonspor", "RW", "ATT", "€6M"], [22, "Ibrahim Adel", "Pyramids", "AM", "ATT", "€6M"]],
+  "Algeria": [[1, "Alexandre Oukidja", "free agent", "GK", "GK", "€1M"], [16, "Anthony Mandrea", "Angers", "GK", "GK", "€3M"], [23, "Luca Zidane", "Granada", "GK", "GK", "€2M"], [2, "Aïssa Mandi", "Lille", "CB", "DEF", "€4M"], [3, "Mohamed Amine Tougai", "Espérance", "CB", "DEF", "€4M"], [4, "Ahmed Touba", "Lecce", "CB", "DEF", "€6M"], [5, "Jaouen Hadjam", "Young Boys", "LB", "DEF", "€10M"], [12, "Youcef Atal", "Al-Sadd", "RB", "DEF", "€4M"], [20, "Ramy Bensebaini", "Dortmund", "LB", "DEF", "€18M"], [6, "Nabil Bentaleb", "Lille", "DM", "MID", "€6M"], [8, "Ramiz Zerrouki", "Feyenoord", "DM", "MID", "€10M"], [10, "Houssem Aouar", "free agent", "AM", "MID", "€8M"], [13, "Ibrahim Maza", "Leverkusen", "AM", "MID", "€20M"], [17, "Adem Zorgane", "Sporting CP", "DM", "MID", "€8M"], [15, "Hicham Boudaoui", "Nice", "CM", "MID", "€10M"], [7, "Riyad Mahrez", "Al-Ahli", "RW", "ATT", "€12M"], [9, "Baghdad Bounedjah", "Al-Sadd", "ST", "ATT", "€4M"], [11, "Yacine Brahimi", "free agent", "RW", "ATT", "€2M"], [14, "Mohamed Amoura", "Wolfsburg", "ST", "ATT", "€30M"], [18, "Amine Gouiri", "Marseille", "ST", "ATT", "€30M"], [19, "Saïd Benrahma", "Neom", "LW", "ATT", "€12M"], [21, "Anis Hadj Moussa", "Feyenoord", "RW", "ATT", "€15M"], [22, "Farès Chaïbi", "Frankfurt", "AM", "MID", "€18M"]],
+  "Tunisia": [[1, "Aymen Dahmen", "Sochaux", "GK", "GK", "€2M"], [16, "Béchir Ben Saïd", "US Monastir", "GK", "GK", "€1M"], [23, "Mouez Hassen", "Club Africain", "GK", "GK", "€1M"], [2, "Wajdi Kechrida", "Atromitos", "RB", "DEF", "€2M"], [3, "Montassar Talbi", "Lorient", "CB", "DEF", "€6M"], [4, "Yassine Meriah", "Espérance", "CB", "DEF", "€2M"], [5, "Nader Ghandri", "Antalyaspor", "CB", "DEF", "€3M"], [12, "Ali Abdi", "Nice", "LB", "DEF", "€6M"], [20, "Mortadha Ben Ouanes", "Olbia", "RB", "DEF", "€1M"], [6, "Dylan Bronn", "Salernitana", "CB", "DEF", "€2M"], [8, "Ellyes Skhiri", "Frankfurt", "DM", "MID", "€12M"], [10, "Hannibal Mejbri", "Burnley", "AM", "MID", "€10M"], [13, "Ferjani Sassi", "free agent", "CM", "MID", "€1M"], [14, "Aïssa Laïdouni", "Al-Wakrah", "DM", "MID", "€6M"], [15, "Mohamed Ali Ben Romdhane", "Ferencváros", "CM", "MID", "€4M"], [17, "Ismaël Gharbi", "Braga", "AM", "MID", "€6M"], [7, "Youssef Msakni", "Al-Arabi", "RW", "ATT", "€2M"], [9, "Seifeddine Jaziri", "Zamalek", "ST", "ATT", "€3M"], [11, "Naïm Sliti", "Al-Ettifaq", "RW", "ATT", "€4M"], [18, "Elias Achouri", "Copenhagen", "LW", "ATT", "€8M"], [19, "Hazem Mastouri", "US Monastir", "ST", "ATT", "€2M"], [21, "Firas Chaouat", "Ferencváros", "ST", "ATT", "€3M"]],
+  "Ghana": [[1, "Lawrence Ati-Zigi", "St. Gallen", "GK", "GK", "€4M"], [12, "Joseph Wollacott", "Crawley", "GK", "GK", "€1M"], [23, "Benjamin Asare", "Hearts of Oak", "GK", "GK", "€1M"], [2, "Tariq Lamptey", "Brighton", "RB", "DEF", "€10M"], [3, "Alexander Djiku", "Fenerbahçe", "CB", "DEF", "€8M"], [4, "Mohammed Salisu", "Monaco", "CB", "DEF", "€18M"], [5, "Alidu Seidu", "Rennes", "CB", "DEF", "€8M"], [15, "Gideon Mensah", "Auxerre", "LB", "DEF", "€4M"], [18, "Jerome Opoku", "Istanbul Başakşehir", "CB", "DEF", "€4M"], [21, "Kingsley Schindler", "free agent", "RB", "DEF", "€2M"], [6, "Elisha Owusu", "Auxerre", "DM", "MID", "€6M"], [8, "Thomas Partey", "Villarreal", "DM", "MID", "€10M"], [10, "Mohammed Kudus", "Tottenham", "AM", "MID", "€55M"], [13, "Lawrence Agyekum", "Cercle Brugge", "AM", "MID", "€6M"], [17, "Abdul Salis Samed", "Lens", "DM", "MID", "€10M"], [20, "Kamaldeen Sulemana", "Atalanta", "LW", "MID", "€18M"], [7, "Antoine Semenyo", "Bournemouth", "RW", "ATT", "€45M"], [9, "Jordan Ayew", "Leicester", "ST", "ATT", "€6M"], [11, "Iñaki Williams", "Athletic Bilbao", "ST", "ATT", "€18M"], [14, "Brandon Thomas-Asante", "Coventry", "ST", "ATT", "€6M"], [19, "Ernest Nuamah", "Lyon", "LW", "ATT", "€18M"], [22, "Fatawu Issahaku", "Leicester", "RW", "ATT", "€18M"]],
+  "South Africa": [[1, "Ronwen Williams", "Sundowns", "GK", "GK", "€2M"], [16, "Ricardo Goss", "Sekhukhune", "GK", "GK", "€1M"], [23, "Sipho Chaine", "Orlando Pirates", "GK", "GK", "€1M"], [2, "Khuliso Mudau", "Sundowns", "RB", "DEF", "€2M"], [3, "Nyiko Mobbie", "Sundowns", "RB", "DEF", "€1M"], [4, "Mothobi Mvala", "Sundowns", "CB", "DEF", "€2M"], [5, "Siyanda Xulu", "free agent", "CB", "DEF", "€1M"], [15, "Aubrey Modiba", "Sundowns", "LB", "DEF", "€2M"], [20, "Nkosinathi Sibisi", "Orlando Pirates", "CB", "DEF", "€1M"], [6, "Grant Kekana", "Sundowns", "CB", "DEF", "€1M"], [8, "Teboho Mokoena", "Sundowns", "DM", "MID", "€4M"], [10, "Themba Zwane", "Sundowns", "AM", "MID", "€1M"], [11, "Thalente Mbatha", "Orlando Pirates", "CM", "MID", "€1M"], [13, "Sphephelo Sithole", "Tondela", "DM", "MID", "€2M"], [18, "Patrick Maswanganyi", "Orlando Pirates", "AM", "MID", "€2M"], [19, "Bongokuhle Hlongwane", "Minnesota Utd", "RW", "MID", "€4M"], [7, "Themba Zwane", "Sundowns", "AM", "MID", "€1M"], [9, "Lyle Foster", "Burnley", "ST", "ATT", "€12M"], [17, "Oswin Appollis", "Polokwane", "RW", "ATT", "€3M"], [14, "Mihlali Mayambela", "Aris Limassol", "LW", "ATT", "€2M"], [21, "Iqraam Rayners", "Sundowns", "ST", "ATT", "€2M"], [22, "Evidence Makgopa", "Orlando Pirates", "ST", "ATT", "€2M"]],
+  "Cabo Verde": [[1, "Vozinha", "RFC Seraing", "GK", "GK", "€1M"], [16, "Márcio Rosa", "Apollon", "GK", "GK", "€1M"], [23, "Bruno Varela", "Vitória SC", "GK", "GK", "€2M"], [2, "Diney", "Estoril", "RB", "DEF", "€2M"], [3, "Stopira", "free agent", "LB", "DEF", "€1M"], [4, "Roberto Lopes", "Shamrock Rovers", "CB", "DEF", "€1M"], [5, "Logan Costa", "Villarreal", "CB", "DEF", "€15M"], [13, "Kenny Rocha", "Casa Pia", "CB", "DEF", "€4M"], [20, "Steven Moreira", "Columbus Crew", "RB", "DEF", "€3M"], [6, "Dylan Tavares", "Famalicão", "LB", "DEF", "€2M"], [8, "Kevin Pina", "Casa Pia", "CM", "MID", "€3M"], [10, "Jamiro Monteiro", "San Jose", "AM", "MID", "€3M"], [15, "Deroy Duarte", "Sparta Rotterdam", "DM", "MID", "€3M"], [17, "Laros Duarte", "Heracles", "CM", "MID", "€2M"], [18, "Pico", "AVS", "DM", "MID", "€2M"], [14, "Patrick Andrade", "Anorthosis", "CM", "MID", "€2M"], [7, "Garry Rodrigues", "free agent", "RW", "ATT", "€2M"], [9, "Willy Semedo", "Anorthosis", "ST", "ATT", "€2M"], [11, "Gilson Tavares", "Vizela", "RW", "ATT", "€2M"], [19, "Dailon Livramento", "Estrela Amadora", "ST", "ATT", "€3M"], [21, "Bebê", "Rio Ave", "LW", "ATT", "€2M"], [22, "Júlio Tavares", "free agent", "ST", "ATT", "€1M"]],
+  "Congo DR": [[1, "Lionel Mpasi", "Rodez", "GK", "GK", "€2M"], [16, "Timothy Fayulu", "Sion", "GK", "GK", "€2M"], [23, "Dimitry Bertaud", "Montpellier", "GK", "GK", "€4M"], [2, "Gédéon Kalulu", "Lorient", "RB", "DEF", "€4M"], [3, "Arthur Masuaku", "Sunderland", "LB", "DEF", "€4M"], [4, "Chancel Mbemba", "Lille", "CB", "DEF", "€10M"], [5, "Dylan Batubinsika", "Saint-Étienne", "CB", "DEF", "€6M"], [12, "Joris Kayembe", "Genk", "LB", "DEF", "€4M"], [20, "Aaron Wan-Bissaka", "West Ham", "RB", "DEF", "€30M"], [6, "Brandon Soppy", "Lecce", "RB", "DEF", "€6M"], [8, "Samuel Moutoussamy", "Nantes", "DM", "MID", "€6M"], [10, "Charles Pickel", "Cremonese", "CM", "MID", "€4M"], [13, "Edo Kayembe", "Watford", "DM", "MID", "€8M"], [14, "Noah Sadiki", "Sunderland", "DM", "MID", "€18M"], [17, "Grady Diangana", "WBA", "LW", "MID", "€6M"], [18, "Théo Bongonda", "Spartak Moscow", "RW", "MID", "€6M"], [7, "Cédric Bakambu", "Real Betis", "ST", "ATT", "€4M"], [9, "Yoane Wissa", "Newcastle", "ST", "ATT", "€35M"], [11, "Silas Katompa", "Stuttgart", "RW", "ATT", "€18M"], [15, "Fiston Mayele", "Pyramids", "ST", "ATT", "€10M"], [19, "Meschack Elia", "Young Boys", "RW", "ATT", "€6M"], [21, "Simon Banza", "Rennes", "ST", "ATT", "€10M"]],
+  "Japan": [[1, "Zion Suzuki", "Parma", "GK", "GK", "€18M"], [12, "Keisuke Osako", "Sanfrecce", "GK", "GK", "€4M"], [23, "Daniel Schmidt", "Gamba Osaka", "GK", "GK", "€2M"], [2, "Yukinari Sugawara", "Southampton", "RB", "DEF", "€12M"], [3, "Shogo Taniguchi", "Sint-Truiden", "CB", "DEF", "€2M"], [4, "Ko Itakura", "Ajax", "CB", "DEF", "€18M"], [5, "Yuto Nagatomo", "FC Tokyo", "LB", "DEF", "€1M"], [16, "Hiroki Sakai", "Cerezo Osaka", "RB", "DEF", "€1M"], [22, "Maya Yoshida", "LA Galaxy", "CB", "DEF", "€1M"], [26, "Kota Takai", "Tottenham", "CB", "DEF", "€10M"], [20, "Yukinari Sugawara", "Southampton", "RB", "DEF", "€12M"], [6, "Wataru Endo", "Liverpool", "DM", "MID", "€10M"], [7, "Hidemasa Morita", "Sporting CP", "DM", "MID", "€12M"], [8, "Takefusa Kubo", "Real Sociedad", "RW", "MID", "€55M"], [10, "Takumi Minamino", "Monaco", "AM", "MID", "€18M"], [13, "Hidemasa Morita", "Sporting CP", "CM", "MID", "€12M"], [17, "Reo Hatate", "Celtic", "CM", "MID", "€12M"], [14, "Junya Ito", "Reims", "RW", "MID", "€8M"], [9, "Ayase Ueda", "Feyenoord", "ST", "ATT", "€18M"], [11, "Kaoru Mitoma", "Brighton", "LW", "ATT", "€45M"], [15, "Daichi Kamada", "Crystal Palace", "AM", "MID", "€18M"], [18, "Takefusa Kubo", "Real Sociedad", "RW", "ATT", "€55M"], [19, "Koki Ogawa", "NEC", "ST", "ATT", "€4M"], [21, "Ritsu Doan", "Frankfurt", "RW", "ATT", "€30M"], [24, "Mao Hosoya", "Kashiwa", "ST", "ATT", "€6M"], [25, "Keito Nakamura", "Reims", "LW", "ATT", "€15M"]],
+  "Iran": [[1, "Alireza Beiranvand", "Persepolis", "GK", "GK", "€2M"], [12, "Payam Niazmand", "Sepahan", "GK", "GK", "€2M"], [22, "Hossein Hosseini", "Esteghlal", "GK", "GK", "€1M"], [2, "Sadegh Moharrami", "Dinamo Zagreb", "RB", "DEF", "€2M"], [3, "Ehsan Hajsafi", "AEK Athens", "LB", "DEF", "€1M"], [4, "Shojae Khalilzadeh", "Tractor", "CB", "DEF", "€1M"], [5, "Milad Mohammadi", "Persepolis", "LB", "DEF", "€1M"], [13, "Hossein Kanaanizadegan", "Al-Ahli", "CB", "DEF", "€2M"], [20, "Aref Aghasi", "Sepahan", "CB", "DEF", "€1M"], [15, "Majid Hosseini", "Kayserispor", "CB", "DEF", "€2M"], [6, "Saeid Ezatolahi", "Esteghlal", "DM", "MID", "€2M"], [8, "Ali Karimi", "Kayserispor", "CM", "MID", "€2M"], [17, "Ali Gholizadeh", "Lech Poznań", "LW", "MID", "€3M"], [18, "Mehdi Ghayedi", "Ittihad Kalba", "RW", "MID", "€3M"], [21, "Omid Noorafkan", "Sepahan", "DM", "MID", "€1M"], [14, "Saman Ghoddos", "Brentford", "AM", "MID", "€3M"], [7, "Alireza Jahanbakhsh", "Heerenveen", "RW", "ATT", "€3M"], [9, "Mehdi Taremi", "Olympiacos", "ST", "ATT", "€12M"], [10, "Karim Ansarifard", "Esteghlal", "ST", "ATT", "€1M"], [11, "Sardar Azmoun", "Shabab Al-Ahli", "ST", "ATT", "€6M"], [16, "Mohammad Mohebi", "Rostov", "RW", "ATT", "€3M"], [19, "Allahyar Sayyadmanesh", "free agent", "ST", "ATT", "€3M"]],
+  "South Korea": [[1, "Kim Seung-gyu", "Al-Shabab", "GK", "GK", "€1M"], [12, "Jo Hyeon-woo", "Ulsan", "GK", "GK", "€2M"], [23, "Song Bum-keun", "Jeonbuk", "GK", "GK", "€2M"], [2, "Kim Moon-hwan", "Ulsan", "RB", "DEF", "€2M"], [3, "Kim Jin-su", "Jeonbuk", "LB", "DEF", "€1M"], [4, "Kim Min-jae", "Bayern", "CB", "DEF", "€40M"], [5, "Kim Young-gwon", "Ulsan", "CB", "DEF", "€1M"], [15, "Jung Seung-hyun", "Al-Wakrah", "CB", "DEF", "€2M"], [20, "Kwon Kyung-won", "Suwon", "CB", "DEF", "€1M"], [22, "Seol Young-woo", "Ulsan", "RB", "DEF", "€4M"], [6, "Hwang In-beom", "Feyenoord", "CM", "MID", "€12M"], [8, "Park Yong-woo", "Al-Ain", "DM", "MID", "€4M"], [13, "Lee Jae-sung", "Mainz", "AM", "MID", "€8M"], [16, "Hong Hyun-seok", "Mainz", "CM", "MID", "€10M"], [17, "Lee Kang-in", "PSG", "AM", "MID", "€35M"], [14, "Hong Hyun-seok", "Mainz", "CM", "MID", "€10M"], [7, "Son Heung-min", "LAFC", "LW", "ATT", "€15M"], [9, "Cho Gue-sung", "Midtjylland", "ST", "ATT", "€6M"], [10, "Lee Dong-gyeong", "Gimcheon", "AM", "ATT", "€3M"], [11, "Hwang Hee-chan", "Wolves", "RW", "ATT", "€18M"], [18, "Oh Hyeon-gyu", "Genk", "ST", "ATT", "€10M"], [19, "Bae Jun-ho", "Stoke", "AM", "ATT", "€10M"], [21, "Yang Min-hyuk", "Tottenham", "RW", "ATT", "€8M"]],
+  "Australia": [[1, "Mathew Ryan", "Lens", "GK", "GK", "€2M"], [12, "Joe Gauci", "Aston Villa", "GK", "GK", "€2M"], [23, "Paul Izzo", "Randers", "GK", "GK", "€1M"], [2, "Milos Degenek", "free agent", "CB", "DEF", "€1M"], [3, "Nathaniel Atkinson", "Hearts", "RB", "DEF", "€2M"], [4, "Kye Rowles", "Hearts", "CB", "DEF", "€3M"], [5, "Jordan Bos", "Feyenoord", "LB", "DEF", "€10M"], [6, "Lewis Miller", "Hibernian", "RB", "DEF", "€2M"], [16, "Aziz Behich", "Melbourne City", "LB", "DEF", "€1M"], [20, "Cameron Burgess", "Ipswich", "CB", "DEF", "€4M"], [19, "Harry Souttar", "Sheffield Utd", "CB", "DEF", "€6M"], [7, "Aiden O'Neill", "Standard Liège", "DM", "MID", "€4M"], [8, "Connor Metcalfe", "St. Pauli", "CM", "MID", "€4M"], [10, "Ajdin Hrustic", "free agent", "AM", "MID", "€2M"], [13, "Aiden O'Neill", "Standard Liège", "DM", "MID", "€4M"], [15, "Riley McGree", "Middlesbrough", "AM", "MID", "€4M"], [22, "Jackson Irvine", "St. Pauli", "CM", "MID", "€2M"], [9, "Mitchell Duke", "Machida Zelvia", "ST", "ATT", "€1M"], [11, "Brandon Borrello", "WS Wanderers", "LW", "ATT", "€1M"], [14, "Riley McGree", "Middlesbrough", "AM", "MID", "€4M"], [17, "Martin Boyle", "Hibernian", "RW", "ATT", "€2M"], [18, "Nestory Irankunda", "Watford", "RW", "ATT", "€4M"], [21, "Kusini Yengi", "Portsmouth", "ST", "ATT", "€3M"], [24, "Nishan Velupillay", "Melbourne Victory", "RW", "ATT", "€2M"]],
+  "Saudi Arabia": [[1, "Nawaf Al-Aqidi", "Al-Nassr", "GK", "GK", "€4M"], [21, "Mohammed Al-Owais", "Al-Hilal", "GK", "GK", "€2M"], [22, "Ahmed Al-Kassar", "Al-Ahli", "GK", "GK", "€1M"], [2, "Sultan Al-Ghanam", "Al-Nassr", "RB", "DEF", "€4M"], [3, "Hassan Tambakti", "Al-Hilal", "CB", "DEF", "€10M"], [4, "Ali Al-Bulaihi", "Al-Hilal", "CB", "DEF", "€2M"], [5, "Ali Lajami", "Al-Nassr", "CB", "DEF", "€3M"], [13, "Saud Abdulhamid", "Roma", "RB", "DEF", "€6M"], [6, "Nasser Al-Dawsari", "Al-Hilal", "LB", "DEF", "€6M"], [12, "Yasser Al-Shahrani", "Al-Hilal", "LB", "DEF", "€2M"], [7, "Salem Al-Dawsari", "Al-Hilal", "LW", "MID", "€10M"], [8, "Abdullah Otayf", "Al-Shabab", "DM", "MID", "€2M"], [14, "Nasser Al-Dawsari", "Al-Hilal", "CM", "MID", "€6M"], [16, "Sami Al-Najei", "Al-Nassr", "CM", "MID", "€4M"], [17, "Mohamed Kanno", "Al-Ittihad", "DM", "MID", "€4M"], [23, "Musab Al-Juwayr", "Al-Hilal", "AM", "MID", "€8M"], [9, "Firas Al-Buraikan", "Al-Ahli", "ST", "ATT", "€10M"], [10, "Salem Al-Dawsari", "Al-Hilal", "LW", "ATT", "€10M"], [11, "Saleh Al-Shehri", "Al-Ittihad", "ST", "ATT", "€4M"], [18, "Abdullah Radif", "Al-Taawoun", "ST", "ATT", "€4M"], [19, "Marwan Al-Sahafi", "Al-Ahli", "RW", "ATT", "€3M"], [20, "Abdulrahman Ghareeb", "Al-Nassr", "RW", "ATT", "€6M"]],
+  "Qatar": [[1, "Meshaal Barsham", "Al-Sadd", "GK", "GK", "€2M"], [21, "Yousef Hassan", "Al-Gharafa", "GK", "GK", "€1M"], [22, "Salah Zakaria", "Al-Wakrah", "GK", "GK", "€1M"], [2, "Pedro Miguel", "Al-Sadd", "RB", "DEF", "€2M"], [3, "Abdelkarim Hassan", "Al-Arabi", "LB", "DEF", "€2M"], [4, "Tarek Salman", "Al-Sadd", "CB", "DEF", "€2M"], [5, "Tameem Al-Muhaza", "Al-Duhail", "CB", "DEF", "€1M"], [15, "Bassam Al-Rawi", "Al-Duhail", "CB", "DEF", "€2M"], [16, "Boualem Khoukhi", "Al-Sadd", "CB", "DEF", "€2M"], [13, "Mohammed Waad", "Al-Sadd", "RB", "DEF", "€1M"], [6, "Abdulaziz Hatem", "Al-Rayyan", "DM", "MID", "€2M"], [8, "Ali Assadalla", "Al-Sadd", "CM", "MID", "€1M"], [10, "Hassan Al-Haydos", "Al-Sadd", "AM", "MID", "€2M"], [12, "Karim Boudiaf", "Al-Duhail", "DM", "MID", "€1M"], [14, "Ahmed Fadel", "Al-Sadd", "CM", "MID", "€1M"], [23, "Jassem Gaber", "Al-Arabi", "AM", "MID", "€2M"], [7, "Ahmed Alaaeldin", "Al-Gharafa", "RW", "ATT", "€1M"], [9, "Mohammed Muntari", "Al-Duhail", "ST", "ATT", "€1M"], [11, "Akram Afif", "Al-Sadd", "LW", "ATT", "€8M"], [17, "Ismail Mohamad", "Al-Duhail", "RW", "ATT", "€1M"], [18, "Khalid Muneer", "Al-Wakrah", "ST", "ATT", "€1M"], [19, "Almoez Ali", "Al-Duhail", "ST", "ATT", "€4M"], [20, "Ahmed Al-Rawi", "Al-Gharafa", "AM", "ATT", "€1M"]],
+  "Iraq": [[1, "Jalal Hassan", "Al-Shorta", "GK", "GK", "€1M"], [12, "Fahad Talib", "Al-Zawraa", "GK", "GK", "€1M"], [23, "Ahmad Basil", "Al-Quwa", "GK", "GK", "€1M"], [2, "Merchas Doski", "Duhok", "CB", "DEF", "€1M"], [3, "Akam Hashim", "Al-Shorta", "LB", "DEF", "€1M"], [4, "Rebin Sulaka", "Sint-Truiden", "CB", "DEF", "€2M"], [5, "Zaid Tahseen", "Al-Quwa", "CB", "DEF", "€1M"], [13, "Hussein Ali", "Al-Zawraa", "LB", "DEF", "€1M"], [15, "Mustafa Nadhim", "Al-Shorta", "CB", "DEF", "€1M"], [6, "Saad Natiq", "Al-Quwa", "CB", "DEF", "€1M"], [7, "Amir Al-Ammari", "Halmstad", "CM", "MID", "€2M"], [8, "Ibrahim Bayesh", "Al-Shorta", "AM", "MID", "€1M"], [10, "Bashar Resan", "Al-Gharafa", "CM", "MID", "€2M"], [14, "Zidane Iqbal", "Utrecht", "CM", "MID", "€4M"], [17, "Manaf Younis", "Al-Quwa", "DM", "MID", "€1M"], [16, "Youssef Amyn", "Duisburg", "RW", "MID", "€2M"], [9, "Aymen Hussein", "Al-Quwa", "ST", "ATT", "€2M"], [11, "Mohanad Ali", "Al-Duhail", "ST", "ATT", "€4M"], [18, "Ali Jasim", "Como", "LW", "ATT", "€4M"], [19, "Ali Al-Hamadi", "Ipswich", "ST", "ATT", "€4M"], [20, "Sajjad Jassim", "Persepolis", "RW", "ATT", "€2M"], [21, "Zaid Tahseen", "Al-Quwa", "RW", "ATT", "€1M"]],
+  "Uzbekistan": [[1, "Utkir Yusupov", "Pakhtakor", "GK", "GK", "€1M"], [12, "Abduvohid Nematov", "Nasaf", "GK", "GK", "€1M"], [23, "Vladimir Nazarov", "Navbahor", "GK", "GK", "€1M"], [2, "Abdukodir Khusanov", "Man City", "CB", "DEF", "€30M"], [3, "Sherzod Nasrullaev", "Pakhtakor", "LB", "DEF", "€2M"], [4, "Rustam Ashurmatov", "Gangwon", "CB", "DEF", "€2M"], [5, "Farrukh Sayfiev", "Pakhtakor", "RB", "DEF", "€2M"], [13, "Khojiakbar Alijonov", "Pakhtakor", "RB", "DEF", "€2M"], [20, "Abdurauf Buriev", "Pakhtakor", "CB", "DEF", "€2M"], [6, "Bobir Abdixolikov", "Al-Wakrah", "CB", "DEF", "€2M"], [8, "Jaloliddin Masharipov", "Bunyodkor", "AM", "MID", "€2M"], [10, "Otabek Shukurov", "Al-Wakrah", "DM", "MID", "€3M"], [14, "Abbosbek Fayzullaev", "CSKA Moscow", "AM", "MID", "€8M"], [16, "Jasurbek Jaloliddinov", "Lokomotiv", "AM", "MID", "€4M"], [17, "Odiljon Hamrobekov", "Hangzhou", "DM", "MID", "€2M"], [18, "Azizbek Turgunboev", "Nasaf", "RW", "MID", "€2M"], [7, "Eldor Shomurodov", "Roma", "ST", "ATT", "€10M"], [9, "Igor Sergeev", "Pakhtakor", "ST", "ATT", "€2M"], [11, "Oston Urunov", "Khujand", "RW", "ATT", "€2M"], [19, "Khojimat Erkinov", "Ulsan", "AM", "ATT", "€3M"], [21, "Jasurbek Jaloliddinov", "Lokomotiv", "AM", "ATT", "€4M"], [22, "Nemanja Bushuk", "Pakhtakor", "ST", "ATT", "€1M"]],
+  "Jordan": [[1, "Yazeed Abulaila", "Al-Wehdat", "GK", "GK", "€1M"], [12, "Abdullah Al-Fakhouri", "Al-Faisaly", "GK", "GK", "€1M"], [21, "Mo'tasem Al-Musa", "Al-Ramtha", "GK", "GK", "€1M"], [2, "Mahmoud Al-Mardi", "Al-Hussein", "RB", "DEF", "€1M"], [3, "Abdallah Nasib", "Al-Wehdat", "LB", "DEF", "€1M"], [4, "Abdallah Al-Attar", "Al-Wehdat", "CB", "DEF", "€1M"], [5, "Yazan Al-Arab", "Al-Wehdat", "CB", "DEF", "€1M"], [15, "Bara' Marei", "Al-Faisaly", "CB", "DEF", "€1M"], [20, "Salem Al-Ajalin", "Al-Wehdat", "CB", "DEF", "€1M"], [6, "Ehsan Haddad", "Al-Hussein", "RB", "DEF", "€1M"], [7, "Noor Al-Rawabdeh", "Al-Wehdat", "AM", "MID", "€1M"], [8, "Nizar Al-Rashdan", "Al-Hussein", "CM", "MID", "€1M"], [10, "Mousa Al-Taamari", "Montpellier", "RW", "ATT", "€8M"], [13, "Mahmoud Mardi", "Al-Hussein", "DM", "MID", "€1M"], [16, "Yazan Al-Naimat", "Al-Ahli", "AM", "MID", "€2M"], [17, "Ali Olwan", "Zakho", "ST", "ATT", "€2M"], [14, "Abdallah Nasib", "Al-Wehdat", "CM", "MID", "€1M"], [9, "Yazan Al-Naimat", "Al-Ahli", "ST", "ATT", "€2M"], [11, "Mahmoud Al-Mardi", "Al-Hussein", "RW", "ATT", "€1M"], [18, "Mohammad Abu Hashish", "Al-Faisaly", "ST", "ATT", "€1M"], [19, "Musa Suleiman", "Al-Wehdat", "RW", "ATT", "€1M"], [22, "Ali Olwan", "Zakho", "ST", "ATT", "€2M"]],
+  "Mexico": [[1, "Guillermo Ochoa", "AVS", "GK", "GK", "€1M"], [12, "Luis Malagón", "América", "GK", "GK", "€10M"], [23, "Raúl Rangel", "Guadalajara", "GK", "GK", "€6M"], [2, "Israel Reyes", "América", "CB", "DEF", "€8M"], [3, "César Montes", "Lokomotiv", "CB", "DEF", "€6M"], [4, "Edson Álvarez", "Fenerbahçe", "DM", "MID", "€25M"], [5, "Johan Vásquez", "Genoa", "CB", "DEF", "€15M"], [15, "Israel Reyes", "América", "CB", "DEF", "€8M"], [19, "Jorge Sánchez", "Cruz Azul", "RB", "DEF", "€4M"], [22, "Jesús Gallardo", "Toluca", "LB", "DEF", "€4M"], [6, "Gerardo Arteaga", "Genk", "LB", "DEF", "€6M"], [8, "Carlos Rodríguez", "Cruz Azul", "CM", "MID", "€8M"], [10, "Orbelín Pineda", "AEK Athens", "AM", "MID", "€6M"], [13, "Luis Romo", "Monterrey", "DM", "MID", "€6M"], [16, "Héctor Herrera", "Houston", "DM", "MID", "€2M"], [17, "Erik Lira", "Cruz Azul", "DM", "MID", "€6M"], [14, "Érick Sánchez", "América", "CM", "MID", "€8M"], [7, "Roberto Alvarado", "Guadalajara", "RW", "ATT", "€8M"], [9, "Raúl Jiménez", "Fulham", "ST", "ATT", "€10M"], [11, "Santiago Giménez", "AC Milan", "ST", "ATT", "€35M"], [18, "Alexis Vega", "Toluca", "AM", "ATT", "€8M"], [20, "Julián Quiñones", "Al-Qadsiah", "ST", "ATT", "€10M"], [21, "Diego Lainez", "Tigres", "RW", "ATT", "€6M"], [24, "Gilberto Mora", "Tijuana", "AM", "ATT", "€12M"]],
+  "United States": [[1, "Matt Turner", "New England", "GK", "GK", "€6M"], [12, "Patrick Schulte", "Columbus", "GK", "GK", "€6M"], [23, "Zack Steffen", "Colorado", "GK", "GK", "€3M"], [2, "Sergiño Dest", "PSV", "RB", "DEF", "€25M"], [3, "Chris Richards", "Crystal Palace", "CB", "DEF", "€30M"], [4, "Tyler Adams", "Bournemouth", "DM", "MID", "€25M"], [5, "Antonee Robinson", "Fulham", "LB", "DEF", "€40M"], [13, "Tim Ream", "Charlotte", "CB", "DEF", "€2M"], [20, "Cameron Carter-Vickers", "Celtic", "CB", "DEF", "€20M"], [22, "Joe Scally", "Mönchengladbach", "RB", "DEF", "€15M"], [15, "Miles Robinson", "FC Cincinnati", "CB", "DEF", "€8M"], [6, "Yunus Musah", "AC Milan", "CM", "MID", "€25M"], [8, "Weston McKennie", "Juventus", "CM", "MID", "€25M"], [10, "Christian Pulisic", "AC Milan", "RW", "ATT", "€60M"], [16, "Johnny Cardoso", "Atlético", "DM", "MID", "€30M"], [14, "Luca de la Torre", "San Diego", "CM", "MID", "€6M"], [18, "Tanner Tessmann", "Lyon", "CM", "MID", "€15M"], [7, "Gio Reyna", "Borussia M'gladbach", "AM", "MID", "€12M"], [9, "Folarin Balogun", "Monaco", "ST", "ATT", "€30M"], [11, "Tim Weah", "Marseille", "RW", "ATT", "€18M"], [17, "Malik Tillman", "Bayer Leverkusen", "AM", "MID", "€30M"], [19, "Haji Wright", "Coventry", "ST", "ATT", "€10M"], [21, "Timothy Weah", "Marseille", "RW", "ATT", "€18M"], [24, "Ricardo Pepi", "PSV", "ST", "ATT", "€18M"], [25, "Diego Luna", "Real Salt Lake", "AM", "ATT", "€8M"]],
+  "Canada": [[1, "Maxime Crépeau", "Portland", "GK", "GK", "€3M"], [12, "Dayne St. Clair", "Minnesota", "GK", "GK", "€6M"], [23, "Tom McGill", "Brighton", "GK", "GK", "€1M"], [2, "Alistair Johnston", "Celtic", "RB", "DEF", "€18M"], [3, "Sam Adekugbe", "Hatayspor", "LB", "DEF", "€3M"], [4, "Moïse Bombito", "Nice", "CB", "DEF", "€18M"], [5, "Steven Vitória", "Chaves", "CB", "DEF", "€1M"], [15, "Derek Cornelius", "Marseille", "CB", "DEF", "€6M"], [19, "Alphonso Davies", "Bayern", "LB", "DEF", "€50M"], [26, "Joel Waterman", "CF Montréal", "CB", "DEF", "€3M"], [6, "Luc de Fougerolles", "Fulham", "CB", "DEF", "€4M"], [7, "Stephen Eustáquio", "Porto", "CM", "MID", "€15M"], [8, "Ismaël Koné", "Sassuolo", "CM", "MID", "€12M"], [13, "Mathieu Choinière", "CF Montréal", "CM", "MID", "€4M"], [17, "Nathan Saliba", "Anderlecht", "DM", "MID", "€6M"], [20, "Jonathan Osorio", "Toronto", "AM", "MID", "€3M"], [18, "Liam Fraser", "Deinze", "DM", "MID", "€2M"], [9, "Lucas Cavallini", "Tigres", "ST", "ATT", "€2M"], [10, "Jonathan David", "Juventus", "ST", "ATT", "€45M"], [11, "Tajon Buchanan", "Villarreal", "RW", "ATT", "€15M"], [14, "Jacob Shaffelburg", "Nashville", "LW", "ATT", "€6M"], [16, "Liam Millar", "Hull", "LW", "ATT", "€4M"], [21, "Jonathan David", "Juventus", "ST", "ATT", "€45M"], [22, "Cyle Larin", "Cadiz", "ST", "ATT", "€4M"], [24, "Promise David", "Union SG", "ST", "ATT", "€10M"]],
+  "Panama": [[1, "Orlando Mosquera", "Sporting San Miguelito", "GK", "GK", "€2M"], [12, "Luis Mejía", "Universidad de Chile", "GK", "GK", "€1M"], [22, "César Samudio", "San Francisco", "GK", "GK", "€1M"], [2, "César Blackman", "Cracovia", "RB", "DEF", "€2M"], [3, "Harold Cummings", "San Francisco", "CB", "DEF", "€1M"], [4, "Fidel Escobar", "Tijuana", "CB", "DEF", "€2M"], [5, "Andrés Andrade", "Atlético Nacional", "CM", "MID", "€3M"], [15, "Eric Davis", "Tauro", "LB", "DEF", "€1M"], [20, "Edgardo Fariña", "Plaza Amador", "CB", "DEF", "€1M"], [23, "Michael Amir Murillo", "Marseille", "RB", "DEF", "€8M"], [6, "Christian Martínez", "Cartagena", "CM", "MID", "€2M"], [8, "Adalberto Carrasquilla", "Houston", "CM", "MID", "€6M"], [10, "Édgar Bárcenas", "Mazatlán", "AM", "MID", "€2M"], [16, "Ányelo Gómez", "Tauro", "DM", "MID", "€1M"], [17, "Aníbal Godoy", "Nashville", "DM", "MID", "€1M"], [14, "Cristian Martínez", "Cartagena", "CM", "MID", "€2M"], [7, "José Fajardo", "Independiente del Valle", "ST", "ATT", "€2M"], [9, "Cecilio Waterman", "Coquimbo", "ST", "ATT", "€2M"], [11, "Ismael Díaz", "Cruz Azul", "RW", "ATT", "€4M"], [13, "Tomás Rodríguez", "Independiente", "LW", "ATT", "€2M"], [18, "Eduardo Guerrero", "Sporting San Miguelito", "ST", "ATT", "€1M"], [19, "Alberto Quintero", "Universitario", "RW", "ATT", "€1M"], [21, "José Córdoba", "Norwich", "CB", "DEF", "€6M"]],
+  "Curaçao": [[1, "Eloy Room", "free agent", "GK", "GK", "€1M"], [12, "Kenneth Vermeer", "free agent", "GK", "GK", "€1M"], [23, "Tijani Reijnders", "NEC", "GK", "GK", "€1M"], [2, "Shaquille Pinas", "Dordrecht", "CB", "DEF", "€2M"], [3, "Cuco Martina", "free agent", "RB", "DEF", "€1M"], [4, "Rangelo Janga", "CSKA Sofia", "ST", "ATT", "€1M"], [5, "Roshon van Eijma", "Telstar", "CB", "DEF", "€1M"], [15, "Juninho Bacuna", "Birmingham", "CM", "MID", "€4M"], [20, "Gervane Kastaneer", "free agent", "RW", "MID", "€1M"], [6, "Leandro Bacuna", "free agent", "DM", "MID", "€2M"], [13, "Sherel Floranus", "Heerenveen", "RB", "DEF", "€2M"], [8, "Jurich Carolina", "Helmond Sport", "RW", "MID", "€2M"], [10, "Leandro Bacuna", "free agent", "CM", "MID", "€2M"], [14, "Kenji Gorré", "Maccabi Netanya", "AM", "MID", "€1M"], [16, "Tahith Chong", "Sheffield Utd", "AM", "MID", "€4M"], [17, "Sontje Hansen", "Middlesbrough", "RW", "ATT", "€4M"], [18, "Anthony van den Hurk", "Vejle", "ST", "ATT", "€2M"], [7, "Jeremy Antonisse", "Excelsior", "LW", "ATT", "€2M"], [9, "Gervane Kastaneer", "free agent", "ST", "ATT", "€1M"], [11, "Kenji Gorré", "Maccabi Netanya", "AM", "ATT", "€1M"], [19, "Livano Comenencia", "Juventus", "RB", "DEF", "€2M"], [21, "Armando Obispo", "PSV", "CB", "DEF", "€4M"], [22, "Brígido Imbula", "Rio Ave", "CM", "MID", "€2M"]],
+  "Haiti": [[1, "Johny Placide", "free agent", "GK", "GK", "€1M"], [12, "Josué Duverger", "Le Mans", "GK", "GK", "€1M"], [23, "Lesly Saint-Fleur", "Cibao", "GK", "GK", "€1M"], [2, "Carl Sainté", "Marseille", "RB", "DEF", "€2M"], [3, "Ricardo Adé", "free agent", "CB", "DEF", "€1M"], [4, "Garvens Pierre", "Cibao", "CB", "DEF", "€1M"], [5, "Jean-Kévin Duverne", "Lorient", "CB", "DEF", "€2M"], [15, "Andrew Jean-Baptiste", "free agent", "CB", "DEF", "€1M"], [20, "Zach Herivaux", "Inter Miami", "DM", "MID", "€1M"], [6, "Christopher Attys", "Sochaux", "CB", "DEF", "€1M"], [8, "Danley Jean Jacques", "Lorient", "DM", "MID", "€3M"], [10, "Carl Sainté", "Marseille", "CM", "MID", "€2M"], [13, "Derrick Etienne", "Columbus", "RW", "ATT", "€3M"], [14, "Leverton Pierre", "free agent", "CM", "MID", "€1M"], [16, "Jems Geffrard", "Sandefjord", "DM", "MID", "€1M"], [17, "Kevin Riché", "Le Mans", "CM", "MID", "€1M"], [7, "Frantzdy Pierrot", "Gaziantep", "ST", "ATT", "€3M"], [9, "Duckens Nazon", "free agent", "ST", "ATT", "€1M"], [11, "Don Deedson Louicius", "Beerschot", "RW", "ATT", "€2M"], [18, "Ruben Providence", "Volos", "RW", "ATT", "€2M"], [19, "Josué Casimir", "CSKA 1948", "LW", "ATT", "€2M"], [21, "Fafà Picault", "Houston", "LW", "ATT", "€2M"]],
+  "Paraguay": [[1, "Roberto Fernández", "Cerro Porteño", "GK", "GK", "€4M"], [12, "Carlos Coronel", "NY Red Bulls", "GK", "GK", "€6M"], [23, "Ángel Romero", "Cerro Porteño", "GK", "GK", "€1M"], [2, "Juan Cáceres", "Argentinos", "RB", "DEF", "€2M"], [3, "Gustavo Gómez", "Palmeiras", "CB", "DEF", "€6M"], [4, "Fabián Balbuena", "Corinthians", "CB", "DEF", "€3M"], [5, "Omar Alderete", "Sunderland", "CB", "DEF", "€10M"], [13, "Junior Alonso", "Krasnodar", "CB", "DEF", "€4M"], [6, "Andrés Cubas", "Vancouver", "DM", "MID", "€6M"], [16, "Juan Espínola", "Olimpia", "LB", "DEF", "€2M"], [22, "Agustín Sández", "Boca Juniors", "LB", "DEF", "€4M"], [8, "Mathías Villasanti", "Grêmio", "DM", "MID", "€6M"], [10, "Miguel Almirón", "Atlanta Utd", "AM", "MID", "€15M"], [14, "Andrés Cubas", "Vancouver", "DM", "MID", "€6M"], [15, "Damián Bobadilla", "San Lorenzo", "CM", "MID", "€6M"], [17, "Diego Gómez", "Brighton", "CM", "MID", "€12M"], [18, "Richard Sánchez", "América", "CM", "MID", "€4M"], [7, "Julio Enciso", "Ipswich", "AM", "ATT", "€15M"], [9, "Antonio Sanabria", "Cremonese", "ST", "ATT", "€6M"], [11, "Ramón Sosa", "Nottingham Forest", "LW", "ATT", "€12M"], [19, "Adam Bareiro", "River Plate", "ST", "ATT", "€4M"], [20, "Alejandro Romero Gamarra", "Al-Riyadh", "AM", "MID", "€4M"], [21, "Gabriel Ávalos", "Cerro Porteño", "ST", "ATT", "€2M"]],
+  "New Zealand": [[1, "Max Crocombe", "Burton", "GK", "GK", "€1M"], [12, "Alex Paulsen", "Bournemouth", "GK", "GK", "€2M"], [23, "Oliver Sail", "Wellington", "GK", "GK", "€1M"], [2, "Tyler Bindon", "Nottingham Forest", "CB", "DEF", "€6M"], [3, "Liberato Cacace", "Empoli", "LB", "DEF", "€6M"], [4, "Nando Pijnaker", "Rapid Wien", "CB", "DEF", "€3M"], [5, "Michael Boxall", "Minnesota", "CB", "DEF", "€1M"], [6, "Finn Surman", "Portland", "CB", "DEF", "€2M"], [15, "Sam Sutton", "Auckland", "LB", "DEF", "€1M"], [20, "Tim Payne", "Auckland", "RB", "DEF", "€1M"], [7, "Marko Stamenic", "Olympiacos", "CM", "MID", "€4M"], [8, "Joe Bell", "Viking", "DM", "MID", "€3M"], [10, "Matthew Garbett", "NAC Breda", "AM", "MID", "€3M"], [13, "Alex Greive", "St. Mirren", "ST", "ATT", "€2M"], [14, "Ben Old", "St. Mirren", "RW", "MID", "€3M"], [17, "Clayton Lewis", "Auckland", "CM", "MID", "€1M"], [9, "Chris Wood", "Nottingham Forest", "ST", "ATT", "€18M"], [11, "Eli Just", "Odense", "LW", "ATT", "€2M"], [16, "Kosta Barbarouses", "Melbourne Victory", "RW", "ATT", "€1M"], [18, "Sarpreet Singh", "Sint-Truiden", "AM", "MID", "€2M"], [19, "Jesse Randall", "Wellington", "ST", "ATT", "€1M"], [21, "Elijah Just", "Odense", "LW", "ATT", "€2M"]],
+  "Bosnia & Herz.": [[1, "Nikola Vasilj", "St. Pauli", "GK", "GK", "€6M"], [12, "Vladan Kovačević", "Sporting CP", "GK", "GK", "€8M"], [23, "Ibrahim Šehić", "Velež", "GK", "GK", "€1M"], [2, "Sead Kolašinac", "Atalanta", "LB", "DEF", "€8M"], [3, "Amar Dedić", "Benfica", "RB", "DEF", "€18M"], [4, "Dennis Hadžikadunić", "Mallorca", "CB", "DEF", "€6M"], [5, "Adrian Leon Barišić", "Hajduk Split", "CB", "DEF", "€4M"], [13, "Nihad Mujakić", "Kasımpaşa", "CB", "DEF", "€3M"], [20, "Nikola Katić", "Lille", "CB", "DEF", "€6M"], [6, "Eldar Ćivić", "Eyüpspor", "LB", "DEF", "€3M"], [7, "Edin Višća", "Trabzonspor", "RW", "MID", "€4M"], [8, "Miralem Pjanić", "free agent", "CM", "MID", "€2M"], [10, "Benjamin Tahirović", "Ajax", "DM", "MID", "€10M"], [14, "Amar Begić", "Sturm Graz", "CM", "MID", "€3M"], [16, "Ivan Bašić", "Borac", "CM", "MID", "€2M"], [17, "Gojko Cimirot", "PAOK", "DM", "MID", "€3M"], [9, "Ermedin Demirović", "Stuttgart", "ST", "ATT", "€25M"], [11, "Edin Džeko", "Fiorentina", "ST", "ATT", "€3M"], [18, "Smail Prevljak", "Al-Wakrah", "ST", "ATT", "€4M"], [15, "Haris Tabaković", "Hoffenheim", "ST", "ATT", "€10M"], [19, "Armin Gigović", "Rostov", "CM", "MID", "€6M"], [21, "Nikola Đurić", "Široki Brijeg", "ST", "ATT", "€1M"]],
+  "Czechia": [[1, "Jindřich Staněk", "Slavia Prague", "GK", "GK", "€8M"], [12, "Matěj Kovář", "Bayer Leverkusen", "GK", "GK", "€10M"], [23, "Vítězslav Jaroš", "Liverpool", "GK", "GK", "€4M"], [2, "Vladimír Coufal", "West Ham", "RB", "DEF", "€4M"], [3, "Ladislav Krejčí", "Wolves", "CB", "DEF", "€25M"], [4, "Tomáš Holeš", "Slavia Prague", "CB", "DEF", "€4M"], [5, "David Zima", "Slavia Prague", "CB", "DEF", "€6M"], [15, "David Doudera", "Slavia Prague", "LB", "DEF", "€3M"], [18, "Robin Hranáč", "Hoffenheim", "CB", "DEF", "€6M"], [6, "Martin Vitík", "Sparta Prague", "CB", "DEF", "€6M"], [13, "David Jurásek", "Hoffenheim", "LB", "DEF", "€6M"], [8, "Pavel Šulc", "Lyon", "AM", "MID", "€18M"], [10, "Patrik Schick", "Bayer Leverkusen", "ST", "ATT", "€30M"], [14, "Lukáš Provod", "Slavia Prague", "AM", "MID", "€6M"], [16, "David Pavelka", "Sparta Prague", "DM", "MID", "€2M"], [17, "Antonín Barák", "Kasımpaşa", "CM", "MID", "€6M"], [19, "Michal Sadílek", "Twente", "DM", "MID", "€4M"], [7, "Antonín Barák", "Kasımpaşa", "AM", "MID", "€6M"], [9, "Adam Hložek", "Hoffenheim", "ST", "ATT", "€12M"], [11, "Mojmír Chytil", "Slavia Prague", "ST", "ATT", "€6M"], [20, "Matěj Vydra", "Viktoria Plzeň", "ST", "ATT", "€2M"], [21, "Tomáš Souček", "West Ham", "CM", "MID", "€12M"], [22, "Vasil Kušej", "Mladá Boleslav", "LW", "ATT", "€4M"]],
+};
+
+const POSGROUP_LABEL = { GK:'Goalkeepers', DEF:'Defenders', MID:'Midfielders', ATT:'Attackers' };
+
+const LEGENDS = {
+  "France": {"player": "Zinedine Zidane", "quote": "Football is simple, but it is difficult to play simple."},
+  "Spain": {"player": "Xavi Hernández", "quote": "Control the ball, control the game. Everything else is just running."},
+  "England": {"player": "Bobby Charlton", "quote": "The mark of a great player is someone who can make the game look easy."},
+  "Portugal": {"player": "Cristiano Ronaldo", "quote": "Your love for what you do and willingness to push yourself where others aren't prepared to go is what will make you great."},
+  "Germany": {"player": "Franz Beckenbauer", "quote": "The game is simple. You get the ball, you give the ball, you win the game."},
+  "Brazil": {"player": "Pelé", "quote": "Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing."},
+  "Argentina": {"player": "Diego Maradona", "quote": "To see the ball, to run after it, makes me the happiest man in the world."},
+  "Netherlands": {"player": "Johan Cruyff", "quote": "Quality without results is pointless. Results without quality is boring."},
+  "Belgium": {"player": "Eden Hazard", "quote": "I prefer to win titles with the team ahead of individual awards, but they do count."},
+  "Norway": {"player": "Erling Haaland", "quote": "I love to score goals. That is what I play for. That is what drives me every single day."},
+  "Croatia": {"player": "Luka Modrić", "quote": "I just play football. I don't think about awards or personal things. The team always comes first."},
+  "Uruguay": {"player": "Luis Suárez", "quote": "Hunger is what drives you. I never want to stop being hungry."},
+  "Switzerland": {"player": "Xherdan Shaqiri", "quote": "When you put on that shirt, you give everything you have, no matter who is on the other side."},
+  "Sweden": {"player": "Zlatan Ibrahimović", "quote": "I am Zlatan Ibrahimović. I came like a king, I leave like a legend."},
+  "Austria": {"player": "David Alaba", "quote": "Every game you have to give everything. There are no easy opponents at this level."},
+  "Scotland": {"player": "Denis Law", "quote": "The most important thing about football is not the winning — it is the taking part and giving everything."},
+  "Turkey": {"player": "Hakan Şükür", "quote": "The greatest honour is to represent your nation on the biggest stage."},
+  "Ecuador": {"player": "Agustín Delgado", "quote": "You have to dream before your dreams can come true."},
+  "Colombia": {"player": "Carlos Valderrama", "quote": "Football is joy. Football is life. I played with a smile on my face and that's how it should be."},
+  "Morocco": {"player": "Noureddine Naybet", "quote": "Africa has the talent to compete with anyone. We only needed the world to see it."},
+  "Senegal": {"player": "Sadio Mané", "quote": "Never let success get to your head and never let failure get to your heart."},
+  "Côte d'Ivoire": {"player": "Didier Drogba", "quote": "I know I can change things. Not just in football, but in the world."},
+  "Egypt": {"player": "Mohamed Salah", "quote": "Being humble means recognising that we are not on earth to see how important we can become, but to see how much difference we can make."},
+  "Algeria": {"player": "Lakhdar Belloumi", "quote": "We showed the world that Algerian football is not just a footnote in history."},
+  "Tunisia": {"player": "Tarak Dhiab", "quote": "We carry the weight of our nation on our shoulders, and we carry it with pride."},
+  "Ghana": {"player": "Abedi Pelé", "quote": "When you wear the Black Stars shirt, you represent an entire continent, not just a country."},
+  "South Africa": {"player": "Benny McCarthy", "quote": "Dreams are what keep you going when everything is telling you to stop."},
+  "Cabo Verde": {"player": "Nani", "quote": "Hard work beats talent when talent doesn't work hard."},
+  "Congo DR": {"player": "Shabani Nonda", "quote": "We play for those who cannot, and we do it with everything we have."},
+  "Japan": {"player": "Hidetoshi Nakata", "quote": "I never thought about what was impossible. I just went out and tried."},
+  "Iran": {"player": "Ali Daei", "quote": "Every goal I scored for Iran was not just for me — it was for every Iranian who believed in us."},
+  "South Korea": {"player": "Park Ji-sung", "quote": "Hard work will always overcome natural talent when natural talent does not work hard."},
+  "Australia": {"player": "Harry Kewell", "quote": "Representing Australia at a World Cup is the pinnacle of any player's career."},
+  "Saudi Arabia": {"player": "Sami Al-Jaber", "quote": "When we step on that pitch, we play not just for ourselves, but for everyone back home."},
+  "Qatar": {"player": "Hasan Al-Haydos", "quote": "We have shown that if you believe and you work, anything is possible, even at a World Cup."},
+  "Iraq": {"player": "Younis Mahmoud", "quote": "Football brought peace to our country when nothing else could. That is the power of this game."},
+  "Uzbekistan": {"player": "Mirjalol Qosimov", "quote": "Football taught me discipline, respect and the value of never giving up."},
+  "Jordan": {"player": "Ahmad Hayel", "quote": "Every time we qualify, it is a miracle we have made ourselves."},
+  "Mexico": {"player": "Hugo Sánchez", "quote": "I did everything with passion. If you do not give everything, you give nothing."},
+  "United States": {"player": "Landon Donovan", "quote": "The United States is the sleeping giant of world football. We're just starting to wake up."},
+  "Canada": {"player": "Alphonso Davies", "quote": "I came from nothing. Football was my way out and I never took a single day for granted."},
+  "Panama": {"player": "Julio Dely Valdés", "quote": "We punched above our weight every time, and no one could ever say we didn't give everything."},
+  "Curaçao": {"player": "Patrick Kluivert", "quote": "Football has no borders. You play wherever the ball takes you."},
+  "Haiti": {"player": "Emmanuel Sanon", "quote": "We shocked the world at the 1974 World Cup and proved that anything is possible in football."},
+  "Paraguay": {"player": "José Luis Chilavert", "quote": "I always say the goalkeeper is the most important player on the pitch. Without us, there is no game."},
+  "New Zealand": {"player": "Wynton Rufer", "quote": "New Zealand football has always punched above its weight. We just keep believing."},
+  "Bosnia & Herz.": {"player": "Elvir Baljić", "quote": "Our country was born in hardship. Every time we represent it, we carry that resilience with us."},
+  "Czechia": {"player": "Pavel Nedvěd", "quote": "I never thought about saving myself for later. I gave everything in every single game."},
+};
+
+function openSquad(teamName) {
+  const t = teams.find(x => x.name === teamName);
+  document.getElementById('squad-overlay').classList.add('open');
+  document.getElementById('squad-panel').classList.add('open');
+  document.getElementById('squad-title').textContent = t.flag + '  ' + t.name;
+  document.getElementById('squad-meta').innerHTML = `
+    <div class="squad-meta-item"><span class="squad-meta-val">${fmtVal(t.value)}</span><span class="squad-meta-lbl">Squad value</span></div>
+    <div class="squad-meta-item"><span class="squad-meta-val">#${t.fifa}</span><span class="squad-meta-lbl">FIFA rank</span></div>
+    <div class="squad-meta-item"><span class="squad-meta-val">Group ${t.group}</span><span class="squad-meta-lbl">WC Group</span></div>
+  `;
+  document.body.style.overflow = 'hidden';
+  renderSquad(SQUADS[teamName] || [], teamName);
+}
+
+function closeSquad() {
+  document.getElementById('squad-overlay').classList.remove('open');
+  document.getElementById('squad-panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSquad(); });
+
+function renderSquad(rows, teamName) {
+  const body = document.getElementById('squad-body');
+  const leg = LEGENDS[teamName];
+  const legendHTML = leg ? `
+    <div class="squad-legend">
+      <span class="squad-legend-quote">${leg.quote}</span>
+      <span class="squad-legend-attr">${leg.player}</span>
+    </div>` : '';
+  if (!rows || !rows.length) {
+    body.innerHTML = `<div class="squad-error" style="color:var(--muted)">Squad data not available for this team.</div>`;
+    return;
+  }
+  const order = ['GK','DEF','MID','ATT'];
+  let html = '';
+  order.forEach(g => {
+    const players = rows.filter(p => p[4] === g).sort((a,b) => a[0] - b[0]);
+    if (!players.length) return;
+    html += `<div class="squad-pos-group"><div class="squad-pos-label">${POSGROUP_LABEL[g]}</div>`;
+    players.forEach(p => {
+      const [num,name,club,pos,grp,val] = p;
+      html += `
+        <div class="squad-player">
+          <span class="squad-player-num">${num}</span>
+          <div style="flex:1;min-width:0">
+            <div class="squad-player-name">${name}</div>
+            <div class="squad-player-club">${club}</div>
+          </div>
+          <span class="squad-player-pos">${pos}</span>
+          <span class="squad-player-val">${val}</span>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<div class="squad-note">⚠ Squad lists and individual values are compiled from squad announcements and Transfermarkt estimates (mid-2025). Final 26-man lists and exact values may differ.</div>`;
+  body.innerHTML = legendHTML + html;
+}
+
+// ─── SEARCH / FILTER ─────────────────────────────────────────────────────────
+function normalise(s) { return s.toLowerCase().trim(); }
+
+function clearSearch(tab) {
+  const input = document.getElementById('search-' + tab);
+  if (input) { input.value = ''; input.dispatchEvent(new Event('input')); input.focus(); }
+}
+
+function updateClearBtn(id, hasValue) {
+  const btn = document.getElementById('clear-' + id);
+  if (btn) btn.classList.toggle('visible', hasValue);
+}
+
+// Ranking
+function filterRankings(q) {
+  updateClearBtn('rankings', q.length > 0);
+  const n = normalise(q);
+  let hits = 0;
+  document.querySelectorAll('#ranking-body tr').forEach(row => {
+    const name = row.querySelector('.rank-country')?.textContent || '';
+    const show = !n || normalise(name).includes(n);
+    row.style.display = show ? '' : 'none';
+    if (show) hits++;
+  });
+  showNoResults('ranking-table', hits === 0 && q.length > 0, 'ranking-noresults');
+}
+
+function showNoResults(afterId, show, nrId) {
+  let el = document.getElementById(nrId);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = nrId;
+    el.className = 'search-no-results';
+    el.textContent = 'No countries match your search.';
+    const ref = document.getElementById(afterId);
+    if (ref) ref.after(el);
+  }
+  el.style.display = show ? 'block' : 'none';
+}
+
+// Teams
+function filterTeams(q) {
+  updateClearBtn('teams', q.length > 0);
+  const n = normalise(q);
+  let hits = 0;
+  document.querySelectorAll('.team-card').forEach(card => {
+    const name = card.querySelector('.team-card-name')?.textContent || '';
+    const show = !n || normalise(name).includes(n);
+    card.style.display = show ? '' : 'none';
+    if (show) hits++;
+  });
+  showNoResults('team-grid', hits === 0 && q.length > 0, 'teams-noresults');
+}
+
+// Groups — hide individual team rows, hide whole card if no teams match
+function filterGroups(q) {
+  updateClearBtn('groups', q.length > 0);
+  const n = normalise(q);
+  let cards = 0;
+  document.querySelectorAll('.group-card').forEach(card => {
+    let hits = 0;
+    card.querySelectorAll('.group-team').forEach(row => {
+      const name = row.querySelector('.group-team-name')?.textContent || '';
+      const show = !n || normalise(name).includes(n);
+      row.style.display = show ? '' : 'none';
+      if (show) hits++;
+    });
+    card.style.display = (hits > 0 || !n) ? '' : 'none';
+    if (card.style.display !== 'none') cards++;
+  });
+  showNoResults('groups-grid', cards === 0 && q.length > 0, 'groups-noresults');
+}
+
+// Matches — re-render with a name filter applied on top of group filter
+function filterMatchesByName(q) {
+  updateClearBtn('matches', q.length > 0);
+  _matchNameQ = q;
+  renderMatchesFiltered();
+}
+
+function renderMatchesFiltered() {
+  const n = normalise(_matchNameQ);
+  const container = document.getElementById('matches-container');
+  container.innerHTML = '';
+  const groupsToShow = currentMatchGroupFilter === 'all' ? groupNames : [currentMatchGroupFilter];
+  let totalCards = 0;
+  groupsToShow.forEach(g => {
+    const gFix = fixtures.filter(f => {
+      if (f[0] !== g) return false;
+      if (!n) return true;
+      return normalise(f[3]).includes(n) || normalise(f[4]).includes(n);
+    });
+    if (!gFix.length) return;
+    let inner = '';
+    [1,2,3].forEach(md => {
+      const dayFix = gFix.filter(f => f[1] === md);
+      if (!dayFix.length) return;
+      inner += `<div class="match-day-label">Matchday ${md} · ${dayFix[0][2]}</div>`;
+      inner += dayFix.map(matchRowHTML).join('');
+      totalCards += dayFix.length;
+    });
+    if (inner) container.innerHTML += `<div class="match-group-block"><div class="match-group-heading">Group ${g}</div>${inner}</div>`;
+  });
+  showNoResults('matches-container', totalCards === 0 && _matchNameQ.length > 0, 'matches-noresults');
+}
+
+// Gaps — filter allMatchups by name on top of existing type filter
+function filterGapsByName(q) {
+  updateClearBtn('gaps', q.length > 0);
+  _gapNameQ = q;
+  renderGapsFiltered();
+}
+
+function renderGapsFiltered() {
+  const n = normalise(_gapNameQ);
+  const filtered = n
+    ? _gapTypeFilter.filter(m => normalise(m.a.name).includes(n) || normalise(m.b.name).includes(n))
+    : _gapTypeFilter;
+  renderMatchups(filtered);
+  showNoResults('matchups-list', filtered.length === 0 && _gapNameQ.length > 0, 'gaps-noresults');
+}
+
+// Override filterMatchups to also apply name filter
+const _origFilterMatchups = filterMatchups;
+// redefine it to track state
+function filterMatchups(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (type === 'all') _gapTypeFilter = allMatchups;
+  else if (type === 'top20') _gapTypeFilter = allMatchups.slice(0, 20);
+  else if (type === 'mega') _gapTypeFilter = allMatchups.filter(m => m.ratio > 20);
+  else if (type === 'closest') _gapTypeFilter = [...allMatchups].sort((a,b) => a.ratio - b.ratio).slice(0, 20);
+  renderGapsFiltered();
+}
+
+// Override filterMatchGroup to track state and re-render with name filter
+const _origFilterMatchGroup = filterMatchGroup;
+function filterMatchGroup(g, btn) {
+  document.querySelectorAll('.mg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMatchGroupFilter = g;
+  renderMatchesFiltered();
+}
+
+// Clear search also resets name filter state
+function clearSearch(tab) {
+  const input = document.getElementById('search-' + tab);
+  if (!input) return;
+  input.value = '';
+  updateClearBtn(tab, false);
+  if (tab === 'rankings') filterRankings('');
+  else if (tab === 'teams') filterTeams('');
+  else if (tab === 'groups') filterGroups('');
+  else if (tab === 'matches') { _matchNameQ = ''; renderMatchesFiltered(); }
+  else if (tab === 'gaps') { _gapNameQ = ''; renderGapsFiltered(); }
+  input.focus();
+}
+
+// ─── DOWNLOAD ────────────────────────────────────────────────────────────────
+function downloadHTML() {
+  const blob = new Blob([__PRISTINE_SOURCE__], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'wc2026-squad-values.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ─── GLOBAL TEAM LINK HANDLER ────────────────────────────────────────────────
+document.addEventListener('click', e => {
+  const el = e.target.closest('.team-link');
+  if (!el) return;
+  const name = el.dataset.team;
+  if (!name) return;
+  showTab('teams');
+  openSquad(name);
+});
+
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+const tabOrder = ['rankings', 'teams', 'groups', 'matches', 'matchups'];
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', tabOrder[i] === name);
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+</body>
+</html>
