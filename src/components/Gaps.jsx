@@ -48,7 +48,7 @@ export default function Gaps({ teams, groupNames, onTeamLink }) {
     <div>
       <div className="section-header">
         <div className="section-title">Group Stage Matchups by Value Gap</div>
-        <div className="section-note">All 72 group-stage fixtures, sorted by squad value delta</div>
+        <div className="section-note">All 72 group-stage fixtures, sorted by squad value ratio</div>
       </div>
       <SearchBar id="search-gaps" placeholder="Search country…" onSearch={setQuery} />
       <div className="matchup-filters">
