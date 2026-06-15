@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <>
-      <Hero />
+      <Hero teams={teams} />
       <Tabs active={activeTab} onSelect={setActiveTab} />
       <div className="container">
         {activeTab === 'rankings' && (
