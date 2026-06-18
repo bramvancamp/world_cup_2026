@@ -42,7 +42,6 @@ function MatchRow({ fixture, T }) {
         </div>
       </div>
       <div className="match-center">
-        <span className="match-group-pill">Group {group}</span>
         <span className="match-vs">VS</span>
         <div className="match-venue">{venue}</div>
         <div className="matchup-bar-section" style={{ marginTop: '6px', width: '100%' }}>
