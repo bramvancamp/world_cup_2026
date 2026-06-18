@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { fmtVal, normalise } from '../utils'
 import SearchBar from './SearchBar'
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const _d = new Date()
+const TODAY = `${MONTHS[_d.getMonth()]} ${_d.getDate()}`
 
 function oddsToProb(odds) {
   if (!odds) return 50
@@ -9,8 +13,15 @@ function oddsToProb(odds) {
   return n > 0 ? (100 / (n + 100)) * 100 : ((-n) / (-n + 100)) * 100
 }
 
+function formatDateLabel(dateStr) {
+  const day = parseInt(dateStr.split(' ')[1])
+  const d = new Date(2026, 5, day)
+  const weekday = d.toLocaleDateString('en-US', { weekday: 'short' })
+  return `${weekday} · ${dateStr}`
+}
+
 function MatchRow({ fixture, T }) {
-  const [, , , homeName, awayName, venue] = fixture
+  const [group, , , homeName, awayName, venue] = fixture
   const h = T(homeName)
   const a = T(awayName)
   if (!h || !a) return null
@@ -31,6 +42,7 @@ function MatchRow({ fixture, T }) {
         </div>
       </div>
       <div className="match-center">
+        <span className="match-group-pill">Group {group}</span>
         <span className="match-vs">VS</span>
         <div className="match-venue">{venue}</div>
         <div className="matchup-bar-section" style={{ marginTop: '6px', width: '100%' }}>
@@ -58,20 +70,32 @@ function MatchRow({ fixture, T }) {
 export default function Matches({ fixtures, T, groupNames }) {
   const [query, setQuery] = useState('')
   const [groupFilter, setGroupFilter] = useState('all')
+  const todayRef = useRef(null)
   const n = normalise(query)
 
-  const groupsToShow = groupFilter === 'all' ? groupNames : [groupFilter]
+  const todayExists = fixtures.some(f => f[2] === TODAY)
 
-  const sections = groupsToShow.map(g => {
-    const gFix = fixtures.filter(f => {
-      if (f[0] !== g) return false
-      if (!n) return true
-      return normalise(f[3]).includes(n) || normalise(f[4]).includes(n)
-    })
-    return { g, fixtures: gFix }
-  }).filter(x => x.fixtures.length > 0)
+  const filtered = fixtures.filter(f => {
+    if (groupFilter !== 'all' && f[0] !== groupFilter) return false
+    if (!n) return true
+    return normalise(f[3]).includes(n) || normalise(f[4]).includes(n)
+  })
 
-  const totalShown = sections.reduce((s, x) => s + x.fixtures.length, 0)
+  // Group by date, sorted chronologically
+  const dateMap = new Map()
+  for (const f of filtered) {
+    if (!dateMap.has(f[2])) dateMap.set(f[2], [])
+    dateMap.get(f[2]).push(f)
+  }
+  const sections = [...dateMap.entries()]
+    .sort((a, b) => parseInt(a[0].split(' ')[1]) - parseInt(b[0].split(' ')[1]))
+
+  function goToToday() {
+    setGroupFilter('all')
+    setTimeout(() => {
+      todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }
 
   return (
     <div>
@@ -81,6 +105,11 @@ export default function Matches({ fixtures, T, groupNames }) {
           72 matches · June 11–27, 2026 · Win prob. from BetMGM/FanDuel (June 2026) · <span style={{ color: 'var(--accent)', fontWeight: 600 }}>Green</span> = higher squad value
         </div>
       </div>
+      {todayExists && (
+        <button className="match-today-btn" onClick={goToToday}>
+          ▶ Today · {TODAY}
+        </button>
+      )}
       <SearchBar id="search-matches" placeholder="Search country…" onSearch={setQuery} />
       <div className="match-group-filters">
         <button className={`mg-btn all${groupFilter === 'all' ? ' active' : ''}`} onClick={() => setGroupFilter('all')}>All</button>
@@ -88,20 +117,20 @@ export default function Matches({ fixtures, T, groupNames }) {
           <button key={g} className={`mg-btn${groupFilter === g ? ' active' : ''}`} onClick={() => setGroupFilter(g)}>{g}</button>
         ))}
       </div>
-      {totalShown === 0 && query && <div className="search-no-results">No matches found.</div>}
-      {sections.map(({ g, fixtures: gFix }) => (
-        <div key={g} className="match-group-block">
-          <div className="match-group-heading">Group {g}</div>
-          {[1, 2, 3].map(md => {
-            const dayFix = gFix.filter(f => f[1] === md)
-            if (!dayFix.length) return null
-            return (
-              <div key={md}>
-                <div className="match-day-label">Matchday {md} · {dayFix[0][2]}</div>
-                {dayFix.map((f) => <MatchRow key={`${f[0]}-${f[1]}-${f[3]}-${f[4]}`} fixture={f} T={T} />)}
-              </div>
-            )
-          })}
+      {filtered.length === 0 && query && <div className="search-no-results">No matches found.</div>}
+      {sections.map(([date, dayFix]) => (
+        <div
+          key={date}
+          className={`match-date-block${date === TODAY ? ' is-today' : ''}`}
+          ref={date === TODAY ? todayRef : null}
+        >
+          <div className="match-date-heading">
+            {formatDateLabel(date)}
+            {date === TODAY && <span className="match-today-badge">Today</span>}
+          </div>
+          {dayFix.map(f => (
+            <MatchRow key={`${f[0]}-${f[1]}-${f[3]}-${f[4]}`} fixture={f} T={T} />
+          ))}
         </div>
       ))}
     </div>
