@@ -68,14 +68,12 @@ function MatchRow({ fixture, T }) {
 
 export default function Matches({ fixtures, T, groupNames }) {
   const [query, setQuery] = useState('')
-  const [groupFilter, setGroupFilter] = useState('all')
   const todayRef = useRef(null)
   const n = normalise(query)
 
   const todayExists = fixtures.some(f => f[2] === TODAY)
 
   const filtered = fixtures.filter(f => {
-    if (groupFilter !== 'all' && f[0] !== groupFilter) return false
     if (!n) return true
     return normalise(f[3]).includes(n) || normalise(f[4]).includes(n)
   })
@@ -90,10 +88,7 @@ export default function Matches({ fixtures, T, groupNames }) {
     .sort((a, b) => parseInt(a[0].split(' ')[1]) - parseInt(b[0].split(' ')[1]))
 
   function goToToday() {
-    setGroupFilter('all')
-    setTimeout(() => {
-      todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 50)
+    todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -110,12 +105,6 @@ export default function Matches({ fixtures, T, groupNames }) {
         </button>
       )}
       <SearchBar id="search-matches" placeholder="Search country…" onSearch={setQuery} />
-      <div className="match-group-filters">
-        <button className={`mg-btn all${groupFilter === 'all' ? ' active' : ''}`} onClick={() => setGroupFilter('all')}>All</button>
-        {groupNames.map(g => (
-          <button key={g} className={`mg-btn${groupFilter === g ? ' active' : ''}`} onClick={() => setGroupFilter(g)}>{g}</button>
-        ))}
-      </div>
       {filtered.length === 0 && query && <div className="search-no-results">No matches found.</div>}
       {sections.map(([date, dayFix]) => (
         <div
