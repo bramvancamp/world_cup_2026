@@ -880,6 +880,9 @@
   .refresh-error {
     font-size: 11px;
     color: #ff6b6b;
+    max-width: 220px;
+    text-align: right;
+    line-height: 1.4;
   }
 
   .match-row--live {

@@ -95,8 +95,8 @@ export default function Matches({ fixtures, T, groupNames }) {
       const scores = await fetchLiveScores()
       setLiveScores(scores)
       setLastRefresh(new Date())
-    } catch {
-      setFetchError('Could not load scores. Please try again.')
+    } catch (e) {
+      setFetchError(e.message || 'Could not load scores. Please try again.')
     } finally {
       setRefreshing(false)
     }
