@@ -8,6 +8,9 @@ import TeamsGrid from './components/TeamsGrid'
 import Groups from './components/Groups'
 import Matches from './components/Matches'
 import Gaps from './components/Gaps'
+import GroupStandings from './components/GroupStandings'
+import Bracket from './components/Bracket'
+import MLPredictor from './components/MLPredictor'
 import SquadPanel from './components/SquadPanel'
 
 const sorted = [...teams].sort((a, b) => b.value - a.value)
@@ -15,7 +18,7 @@ const teamByName = Object.fromEntries(teams.map(t => [t.name, t]))
 function T(name) { return teamByName[alias[name] || name] }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('rankings')
+  const [activeTab, setActiveTab] = useState('bracket')
   const [squadTeam, setSquadTeam] = useState(null)
 
   const openSquad = useCallback((name) => setSquadTeam(name), [])
@@ -31,6 +34,9 @@ export default function App() {
       <Hero teams={teams} />
       <Tabs active={activeTab} onSelect={setActiveTab} />
       <div className="container">
+        {activeTab === 'bracket' && <Bracket />}
+        {activeTab === 'predict' && <MLPredictor />}
+        {activeTab === 'standings' && <GroupStandings />}
         {activeTab === 'rankings' && (
           <Rankings sorted={sorted} onTeamLink={handleTeamLink} />
         )}

@@ -1,9 +1,12 @@
 const TABS = [
-  { id: 'rankings', label: 'Ranking' },
-  { id: 'teams',    label: 'Teams' },
-  { id: 'groups',   label: 'Groups' },
-  { id: 'matches',  label: 'Matches' },
-  { id: 'matchups', label: 'Gaps' },
+  { id: 'bracket',   label: '⚽ Bracket' },
+  { id: 'predict',   label: '🤖 Predictions' },
+  { id: 'standings', label: 'Standings' },
+  { id: 'rankings',  label: 'Ranking' },
+  { id: 'teams',     label: 'Teams' },
+  { id: 'groups',    label: 'Groups' },
+  { id: 'matches',   label: 'Matches' },
+  { id: 'matchups',  label: 'Gaps' },
 ]
 
 export default function Tabs({ active, onSelect }) {
